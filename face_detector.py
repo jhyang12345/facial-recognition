@@ -15,9 +15,10 @@ def save_faces(im, face_locations, output_path="resized_faces"):
         sub_image = img[top:bottom, left:right] # left upper right lower
         sub_image = Image.fromarray(np.uint8(sub_image))
         sub_image.save(
-            os.path.join(output_path, get_new_file_name() + ".png"))
+            os.path.join(output_path, get_new_file_name() + ".jpg"))
     print("Saved {} new images".format(len(face_locations)))
 
+# face_recognition loaded image file passed to image
 def find_face_locations(image, image_path=""):
     face_locations = face_recognition.face_locations(image,
             number_of_times_to_upsample=0, model="cnn")
