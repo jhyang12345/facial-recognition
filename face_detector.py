@@ -18,7 +18,7 @@ def save_faces(im, face_locations, output_path="resized_faces"):
             os.path.join(output_path, get_new_file_name() + ".png"))
     print("Saved {} new images".format(len(face_locations)))
 
-def find_face_locations(image):
+def find_face_locations(image, image_path=""):
     face_locations = face_recognition.face_locations(image,
             number_of_times_to_upsample=0, model="cnn")
     print("Processing: {}, Number of faces found: {}"
@@ -27,7 +27,7 @@ def find_face_locations(image):
 
 def find_face_locations_with_path(image_path):
     image = face_recognition.load_image_file(image_path)
-    return find_face_locations(image)
+    return find_face_locations(image, image_path)
 
 def iterate_over_directory(directory_path):
     files = os.listdir(directory_path)

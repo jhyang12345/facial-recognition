@@ -1,5 +1,7 @@
 iu_images
 resized_faces
+manual_filter
+videos
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
