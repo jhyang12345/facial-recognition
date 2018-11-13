@@ -1,15 +1,45 @@
-import os, sys
+import os, sys, time
 from PIL import Image
 import face_recognition
 import numpy as np
 from argparse import ArgumentParser
 
+def get_new_file_name():
+    value = int(time.time() * 1000)
+    return str(value)
+
+def save_faces(im, face_locations, output_path="resized_faces"):
+    extension = im.filename.split('.')[-1]
+    img = np.asarray(im)
+    for (top, right, bottom, left) in face_locations:
+        print((left, top, right, bottom), im.size)
+        sub_image = img[top:bottom, left:right] # left upper right lower
+        sub_image = Image.fromarray(np.uint8(sub_image))
+        sub_image.save(
+            os.path.join(output_path, get_new_file_name() + "." + extension))
+    print("Saved {} new images".format(len(face_locations)))
+
+
 def find_face_locations(image_path):
-    print(image_path)
     image = face_recognition.load_image_file(image_path)
     face_locations = face_recognition.face_locations(image,
             number_of_times_to_upsample=0, model="cnn")
-    print(face_locations)
+    print("Processing: {}, Number of faces found: {}"
+        .format(os.path.basename(image_path), len(face_locations)))
+    return face_locations
+
+def iterate_over_directory(directory_path):
+    files = os.listdir(directory_path)
+    cur_dir = directory_path
+    for image in files:
+        abs_path = os.path.join(cur_dir, image)
+        try:
+            locations = find_face_locations(abs_path)
+            if(locations):
+                save_faces(Image.open(abs_path), locations)
+        except Exception as e:
+            print(e)
+            print("Something went wrong with file:", abs_path)
 
 def main(argv):
     parser = ArgumentParser()
@@ -19,10 +49,11 @@ def main(argv):
     if args["path"]:
         print("Path accepted")
         path = args["path"].split()[-1]
+
     else:
         print("No path given!")
         return
-    find_face_locations(path)
+    iterate_over_directory(path)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
