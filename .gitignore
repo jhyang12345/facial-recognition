@@ -2,7 +2,13 @@ iu_images
 resized_faces
 manual_filter
 videos
+examples
 outputs_from_video
+*.mp4
+*.mkv
+*.webm
+*.h5
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

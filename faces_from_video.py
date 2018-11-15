@@ -12,7 +12,7 @@ def save_faces_from_frame(frame, face_locations, destination_path="outputs_from_
         file_name = get_new_file_name() + "_" + str(i)
         cv2.imwrite(os.path.join(destination_path, file_name) + ".jpg", sub_face)
 
-def get_faces(video_file_path, skip_frame=40,
+def get_faces(video_file_path, skip_frame=120,
             ):
     print(video_file_path)
     cap = cv2.VideoCapture(video_file_path)
