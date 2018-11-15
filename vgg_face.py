@@ -5,7 +5,7 @@ from keras.applications.imagenet_utils import preprocess_input
 import numpy as np
 
 class VGG_face:
-    def __init__(self, epsilon=0.4):
+    def __init__(self, epsilon=0.35):
         self.init_model()
         self.load_model()
         self.output_model = Model(inputs=self.model.layers[0].input, outputs=self.model.layers[-2].output)
@@ -82,13 +82,20 @@ class VGG_face:
         return euclidean_distance
 
     def verify_face(self, img1, img2):
-        img1_representation = self.output_model.predict(self.preprocess_image(img1))[0,:]
-        img2_representation = self.output_model.predict(self.preprocess_image(img2))[0,:]
+        try:
+            img1_representation = self.output_model.predict(self.preprocess_image(img1))[0,:]
+            img2_representation = self.output_model.predict(self.preprocess_image(img2))[0,:]
+        except Exception as e:
+            print("Failed to open file!")
+            return False
 
         cosine_similarity = self.findCosineSimilarity(img1_representation, img2_representation)
         euclidean_distance = self.findEuclideanDistance(img1_representation, img2_representation)
         print(cosine_similarity)
-        return cosine_similarity < self.epsilon
+        return cosine_similarity, cosine_similarity < self.epsilon
+
+    def change_anchor(self, cosine):
+        return cosine < self.epsilon / 2
 
 
 if __name__ == '__main__':
