@@ -2,10 +2,11 @@ import sys, os
 from PIL import Image
 from util import create_and_return_directory, copy_file
 from vgg_face import VGG_face
+from face_net import Face_Net
 
 def filter_directory(directory, positive_path="filtered_positive",
             negative_path="filtered_negative", reference_image="reference.jpg"):
-    face = VGG_face()
+    face = Face_Net()
     images = os.listdir(directory)
     for image in images:
         abs_path = os.path.join(directory, image)

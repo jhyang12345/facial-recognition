@@ -10,6 +10,7 @@ filtered_positive/*
 *.mkv
 *.webm
 *.h5
+*.json
 
 
 # Byte-compiled / optimized / DLL files
