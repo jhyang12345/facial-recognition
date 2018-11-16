@@ -1,12 +1,18 @@
 import os, sys, time
 from PIL import Image
-import face_recognition
+# import face_recognition
+from mtcnn.mtcnn import MTCNN
 import numpy as np
 from argparse import ArgumentParser
 
 def get_new_file_name():
     value = int(time.time() * 1000)
     return str(value)
+
+def mtcnn_find_faces(img):
+    detector = MTCNN()
+    faces = detector.detect_faces(img)
+    print(faces)
 
 def save_faces(im, face_locations, output_path="resized_faces"):
     extension = im.filename.split('.')[-1]

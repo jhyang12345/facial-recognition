@@ -1,9 +1,10 @@
 import sys, os
 import cv2
 from PIL import Image
+from mtcnn.mtcnn import MTCNN
 import numpy as np
 from optparse import OptionParser
-from face_detector import find_face_locations, save_faces, get_new_file_name
+from face_detector import find_face_locations, save_faces, get_new_file_name, mtcnn_find_faces
 
 def save_faces_from_frame(frame, face_locations, destination_path="outputs_from_video"):
     i = 0
@@ -22,8 +23,9 @@ def get_faces(video_file_path, skip_frame=120,
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         if i % skip_frame == 0:
             print("Iterating frame: {}".format(i))
-            face_locations = find_face_locations(frame)
-            save_faces_from_frame(frame, face_locations)
+            mtcnn_find_faces(frame)
+            # save_faces_from_frame(frame, face_locations)
+            # face_locations = find_face_locations(frame)
             pass
         i += 1
     cap.release()
