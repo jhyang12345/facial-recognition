@@ -9,10 +9,22 @@ def get_new_file_name():
     value = int(time.time() * 1000)
     return str(value)
 
-def mtcnn_find_faces(img):
-    detector = MTCNN()
-    faces = detector.detect_faces(img)
-    print(faces)
+class MTCNN_detector():
+    def __init__(self):
+        self.detector = None
+        self.init_detector()
+
+    def init_detector(self):
+        self.detector = MTCNN()
+
+    def mtcnn_find_faces(self, img):
+        return self.detector.detect_faces(img)
+
+    def get_bounding_boxes(self, img):
+        ret = []
+        for match in self.mtcnn_find_faces(img):
+            ret.append(match["box"])
+        return ret
 
 def save_faces(im, face_locations, output_path="resized_faces"):
     extension = im.filename.split('.')[-1]

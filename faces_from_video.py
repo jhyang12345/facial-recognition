@@ -4,7 +4,7 @@ from PIL import Image
 from mtcnn.mtcnn import MTCNN
 import numpy as np
 from optparse import OptionParser
-from face_detector import find_face_locations, save_faces, get_new_file_name, mtcnn_find_faces
+from face_detector import find_face_locations, save_faces, get_new_file_name, MTCNN_detector
 
 def save_faces_from_frame(frame, face_locations, destination_path="outputs_from_video"):
     i = 0
@@ -13,9 +13,9 @@ def save_faces_from_frame(frame, face_locations, destination_path="outputs_from_
         file_name = get_new_file_name() + "_" + str(i)
         cv2.imwrite(os.path.join(destination_path, file_name) + ".jpg", sub_face)
 
-def get_faces(video_file_path, skip_frame=120,
-            ):
+def get_faces(video_file_path, skip_frame=120):
     print(video_file_path)
+    detector = MTCNN_detector()
     cap = cv2.VideoCapture(video_file_path)
     i = 0
     while(cap.isOpened()):
@@ -23,7 +23,7 @@ def get_faces(video_file_path, skip_frame=120,
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         if i % skip_frame == 0:
             print("Iterating frame: {}".format(i))
-            mtcnn_find_faces(frame)
+            print(detector.mtcnn_find_faces(frame))
             # save_faces_from_frame(frame, face_locations)
             # face_locations = find_face_locations(frame)
             pass
