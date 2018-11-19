@@ -1,5 +1,6 @@
 import os, sys, time
 from PIL import Image
+import cv2
 # import face_recognition
 from mtcnn.mtcnn import MTCNN
 import numpy as np
@@ -9,9 +10,11 @@ def get_new_file_name():
     value = int(time.time() * 1000)
     return str(value)
 
-class MTCNN_detector():
-    def __init__(self):
+class MTCNN_detector:
+    def __init__(self, output_path, filename):
         self.detector = None
+        self.output_path = output_path
+        self.filename = filename.split(".")[0]
         self.init_detector()
 
     def init_detector(self):
@@ -42,6 +45,22 @@ class MTCNN_detector():
         if(height == length):
             x = int(x - (length - width) / 2)
         return [x, y, length, length]
+
+    # image is already opencv frame
+    def crop_images_with_box(self, img, frame):
+        bounds = self.get_image_crop_bounds(img)
+        i = 0
+        for bound in bounds:
+            x, y, width, height = bound
+            try:
+                print("iterating through bound", bound)
+                sub_image = img[y:y+height, x:x+width]
+                cv2.imwrite(os.path.join(self.output_path, "{}_{}_{}.jpg".format(self.filename, frame, i)), sub_image)
+            except Exception as e:
+                print(e)
+                continue
+            i += 1
+
 
 def save_faces(im, face_locations, output_path="resized_faces"):
     extension = im.filename.split('.')[-1]

@@ -15,7 +15,8 @@ def save_faces_from_frame(frame, face_locations, destination_path="outputs_from_
 
 def get_faces(video_file_path, skip_frame=120):
     print(video_file_path)
-    detector = MTCNN_detector()
+    filename = os.path.basename(video_file_path)
+    detector = MTCNN_detector("outputs_from_video", filename)
     cap = cv2.VideoCapture(video_file_path)
     i = 0
     while(cap.isOpened()):
@@ -23,7 +24,7 @@ def get_faces(video_file_path, skip_frame=120):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         if i % skip_frame == 0:
             print("Iterating frame: {}".format(i))
-            print(detector.get_image_crop_bounds(frame))
+            detector.crop_images_with_box(frame, i)
             # save_faces_from_frame(frame, face_locations)
             # face_locations = find_face_locations(frame)
             pass
