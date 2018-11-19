@@ -26,6 +26,23 @@ class MTCNN_detector():
             ret.append(match["box"])
         return ret
 
+    # [x, y, width, height]
+    def get_image_crop_bounds(self, img):
+        boxes = self.get_bounding_boxes(img)
+        ret = []
+        for box in boxes:
+            ret.append(self.get_centered_box(box))
+        return ret
+
+    def get_centered_box(self, box):
+        x, y, width, height = box
+        length = max(width, height)
+        if(width == length):
+            y = int(y - (length - height) / 2)
+        if(height == length):
+            x = int(x - (length - width) / 2)
+        return [x, y, length, length]
+
 def save_faces(im, face_locations, output_path="resized_faces"):
     extension = im.filename.split('.')[-1]
     img = np.asarray(im)
