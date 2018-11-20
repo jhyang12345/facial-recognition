@@ -21,13 +21,16 @@ def get_faces(video_file_path, skip_frame=120):
     i = 0
     while(cap.isOpened()):
         ret, frame = cap.read()
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        if i % skip_frame == 0:
-            print("Iterating frame: {}".format(i))
-            detector.crop_images_with_box(frame, i)
-            # save_faces_from_frame(frame, face_locations)
-            # face_locations = find_face_locations(frame)
-            pass
+        try:
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            if i % skip_frame == 0:
+                print("Iterating frame: {}".format(i))
+                detector.crop_images_with_box(frame, i)
+                # save_faces_from_frame(frame, face_locations)
+                # face_locations = find_face_locations(frame)
+                pass
+        except Exception as e:
+            print("No more frames!")
         i += 1
     cap.release()
 
@@ -46,7 +49,7 @@ def main(argv):
     if options.path:
         print("Path accepted")
         path = options.path
-        get_faces(path)
+        video_directory_pipeline(path)
     else:
         print("No path given!")
         return
