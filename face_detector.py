@@ -15,6 +15,7 @@ class MTCNN_detector:
         self.detector = None
         self.output_path = output_path
         self.filename = filename.split(".")[0]
+        self.minimum_threshold = 100
         self.init_detector()
 
     def init_detector(self):
@@ -52,6 +53,8 @@ class MTCNN_detector:
         i = 0
         for bound in bounds:
             x, y, width, height = bound
+            if width <= self.minimum_threshold or height <= self.minimum_threshold:
+                continue
             try:
                 print("iterating through bound", bound)
                 sub_image = img[y:y+height, x:x+width]

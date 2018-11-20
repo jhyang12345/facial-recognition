@@ -31,6 +31,12 @@ def get_faces(video_file_path, skip_frame=120):
         i += 1
     cap.release()
 
+def video_directory_pipeline(directory):
+    videos = os.listdir(directory)
+    for video in videos:
+        video_file_path = os.path.join(directory, video)
+        get_faces(video_file_path)
+
 def main(argv):
     parser = OptionParser()
     parser.add_option("-p", "--path", dest="path")
