@@ -1,5 +1,5 @@
 from keras.layers import Input, Convolution2D, SeparableConvolution2D, \
-                GlobalAveragePooling2D, GlobalMaxPooling2D, \
+                GlobalAveragePooling2D, GlobalMaxPooling2D, MaxPooling2D, \
                 Dense, Activation, BatchNormalization
 from keras.models import Sequential, Model
 
