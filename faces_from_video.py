@@ -25,12 +25,14 @@ def get_faces(video_file_path, skip_frame=120):
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             if i % skip_frame == 0:
                 print("Iterating frame: {}".format(i))
-                detector.crop_images_with_box(frame, i)
-                # save_faces_from_frame(frame, face_locations)
-                # face_locations = find_face_locations(frame)
+                # detector.crop_images_with_box(frame, i)
+                face_locations = find_face_locations(frame)
+                save_faces_from_frame(frame, face_locations)
                 pass
         except Exception as e:
+            print(e)
             print("No more frames!")
+            break
         i += 1
     cap.release()
 

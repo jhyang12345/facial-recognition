@@ -1,7 +1,8 @@
 import os, sys, time
 from PIL import Image
 import cv2
-# import face_recognition
+import face_recognition
+from face_aligner import get_eyes_angle
 from mtcnn.mtcnn import MTCNN
 import numpy as np
 from argparse import ArgumentParser
@@ -64,7 +65,6 @@ class MTCNN_detector:
                 continue
             i += 1
 
-
 def save_faces(im, face_locations, output_path="resized_faces"):
     extension = im.filename.split('.')[-1]
     img = np.asarray(im)
@@ -86,6 +86,14 @@ def find_face_locations(image, image_path=""):
 def find_face_locations_with_path(image_path):
     image = face_recognition.load_image_file(image_path)
     return find_face_locations(image, image_path)
+
+def find_face_landmarks_with_path(image_path):
+    image = face_recognition.load_image_file(image_path)
+    face_landmarks_list = face_recognition.face_landmarks(image)
+    face_locations = find_face_locations(image, image_path)
+    for landmark in face_landmarks_list:
+        get_eyes_angle(landmark)
+        continue
 
 def iterate_over_directory(directory_path):
     files = os.listdir(directory_path)
@@ -110,11 +118,11 @@ def main(argv):
     if args["path"]:
         print("Path accepted")
         path = args["path"].split()[-1]
-
     else:
         print("No path given!")
         return
-    iterate_over_directory(path)
+    # iterate_over_directory(path)
+    find_face_landmarks_with_path(path)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
