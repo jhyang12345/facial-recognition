@@ -58,6 +58,9 @@ class DeepDog:
         out = Dense(1, activation='sigmoid')(x)
 
         self.model = Model(model_input, out, name='deepdog')
+        # not sure what type of optimizer or loss function to use
+        self.model.compile(loss='binary_crossentropy', optimizer='adam',
+                                metrics=['accuracy'])
 
     # for this model type kernel size will be equal to 3
     def apply_separable_layer(self, x, filters, activation_type, strides=(1, 1)):
