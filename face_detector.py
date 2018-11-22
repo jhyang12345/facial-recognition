@@ -105,7 +105,7 @@ def handle_image_faces(image_path):
         face_location = face_locations[i]
         face_landmarks = face_landmarks_list[i]
         aligner.save_rotated_face(face_location, face_landmarks, image)
-        
+
 def iterate_over_directory(directory_path):
     files = os.listdir(directory_path)
     cur_dir = directory_path
