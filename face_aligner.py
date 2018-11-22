@@ -1,26 +1,8 @@
 import numpy as np
 from PIL import Image, ImageDraw
+import cv2
 
 necessary_landmarks = ["left_eye", "right_eye", "nose_bridge"]
-
-# image is face_recognition opened image
-def get_eyes_angle(landmark, image_array):
-    if not is_necessary_landmarks_there(landmark):
-        return 0
-    left_eye = landmark["left_eye"]
-    right_eye = landmark["right_eye"]
-    nose_bridge = landmark["nose_bridge"]
-    left_center = np.mean(left_eye, axis=0)
-    right_center = np.mean(right_eye, axis=0)
-    # nose_center is not reliable for center of face
-    nose_center = np.mean(nose_bridge, axis=0)
-    dY = right_center[1] - left_center[1]
-    dX = right_center[0] - left_center[0]
-    eye_center = np.mean([left_center, right_center], axis=0)
-    print(eye_center)
-    draw_landmarks(left_center, right_center, eye_center, image_array)
-    angle = np.degrees(np.arctan2(dY, dX))
-    return angle, eye_center
 
 def is_necessary_landmarks_there(landmark):
     for point in necessary_landmarks:
@@ -42,3 +24,67 @@ def draw_landmarks(left_center, right_center, nose_center, image_array):
     draw_circle(right_center[0], right_center[1], pil_image)
     draw_circle(nose_center[0], nose_center[1], pil_image)
     pil_image.save("output.jpg")
+
+class FaceAligner:
+    def __init__(self, desired_left_eye=(0.35, 0.35), desired_image_width=128,
+            desired_image_height=128):
+        self.desired_left_eye = desired_left_eye
+        self.desired_right_eye = (1 - desired_left_eye[0], desired_left_eye[1])
+        self.desired_image_width = desired_image_width
+        self.desired_image_height = desired_image_height
+
+    def align(self, image, rect):
+        pass
+
+        # image is face_recognition opened image
+    def get_eyes_angle(self, landmark, image_array):
+        if not is_necessary_landmarks_there(landmark):
+            return 0
+        left_eye = landmark["left_eye"]
+        right_eye = landmark["right_eye"]
+        nose_bridge = landmark["nose_bridge"]
+        left_center = np.mean(left_eye, axis=0)
+        right_center = np.mean(right_eye, axis=0)
+        # nose_center is not reliable for center of face
+        nose_center = np.mean(nose_bridge, axis=0)
+        dY = right_center[1] - left_center[1]
+        dX = right_center[0] - left_center[0]
+        eye_center = np.mean([left_center, right_center], axis=0).astype("int")
+        # draw_landmarks(left_center, right_center, eye_center, image_array)
+        print("Found centers")
+        angle = np.degrees(np.arctan2(dY, dX))
+        return angle, left_center, right_center, eye_center
+
+    def save_rotated_face(self, rectangle, landmark, image_array):
+        angle, left_eye, right_eye, eye_center = self.get_eyes_angle(landmark, image_array)
+        zoom_scale = self.get_image_relative_scale(rectangle, left_eye, right_eye)
+        eye_center = (eye_center[0], eye_center[1])
+        dummy_image = Image.fromarray(image_array).rotate(angle, center=eye_center)
+
+        # M = cv2.getRotationMatrix2D(eye_center, angle, zoom_scale)
+        # # update the translation component of the matrix
+        # tX = self.desired_image_width * 0.5
+        # tY = self.desired_image_height * self.desired_left_eye[1]
+        # M[0, 2] += (tX - eye_center[0])
+        # M[1, 2] += (tY - eye_center[1])
+        #
+        # # apply the affine transformation
+        # (w, h) = (self.desired_image_width, self.desired_image_height)
+        # output = cv2.warpAffine(image_array, M, (w, h),
+        #     flags=cv2.INTER_CUBIC)
+        # Image.fromarray(np.uint8(output)).save("cv.jpg")
+
+        dummy_array = np.asarray(dummy_image)
+        top, right, bottom, left = rectangle
+        sub_image = dummy_array[top:bottom, left:right]
+        sub_image = Image.fromarray(np.uint8(sub_image))
+
+        sub_image.save("output.jpg")
+        pass
+
+    def get_image_relative_scale(self, rectangle, left_eye, right_eye):
+        top, right, bottom, left = rectangle
+        image_width = right - left
+        eye_gap = right_eye[0] - left_eye[0]
+        ratio = image_width / (self.desired_right_eye[0] - self.desired_left_eye[0])
+        return ratio
