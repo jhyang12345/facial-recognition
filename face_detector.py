@@ -92,7 +92,7 @@ def find_face_landmarks_with_path(image_path):
     face_landmarks_list = face_recognition.face_landmarks(image)
     face_locations = find_face_locations(image, image_path)
     for landmark in face_landmarks_list:
-        get_eyes_angle(landmark, image)
+        angle, eye_center = get_eyes_angle(landmark, image)
         continue
 
 def iterate_over_directory(directory_path):
