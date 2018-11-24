@@ -65,7 +65,7 @@ class MTCNN_detector:
                 continue
             i += 1
 
-def save_faces(im, face_locations, output_path="resized_faces"):
+def save_faces(im, face_locations, output_path="manual_filter"):
     extension = im.filename.split('.')[-1]
     img = np.asarray(im)
     for (top, right, bottom, left) in face_locations:
@@ -95,16 +95,17 @@ def find_face_landmarks_with_path(image_path):
 def handle_image_faces(image_path):
     image = face_recognition.load_image_file(image_path)
     face_locations = face_recognition.face_locations(image,
-            number_of_times_to_upsample=0, model="cnn")
+            number_of_times_to_upsample=1, model="cnn")
     face_landmarks_list = face_recognition.face_landmarks(image)
     if len(face_locations) != len(face_landmarks_list):
-        print("landmarks and face_locations do not match!")
+        print("landmarks and face_locations do not match! Found faces: {}".format(len(face_locations)))
+        save_faces(Image.open(image_path), face_locations)
         return
     aligner = FaceAligner()
-    for i in range(len(face_locations)):
+    for i in range(len(face_landmarks_list)):
         face_location = face_locations[i]
         face_landmarks = face_landmarks_list[i]
-        aligner.save_rotated_face(face_location, face_landmarks, image)
+        aligner.save_rotated_face(face_location, face_landmarks, image, file_name="{}_{}.jpg".format(get_new_file_name(), i))
 
 def iterate_over_directory(directory_path):
     files = os.listdir(directory_path)
@@ -114,9 +115,7 @@ def iterate_over_directory(directory_path):
         if "gif" in image:
             continue
         try:
-            locations = find_face_locations_with_path(abs_path)
-            if(locations):
-                save_faces(Image.open(abs_path), locations)
+            handle_image_faces(abs_path)
         except Exception as e:
             print(e)
             print("Something went wrong with file:", abs_path)
@@ -132,8 +131,8 @@ def main(argv):
     else:
         print("No path given!")
         return
-    # iterate_over_directory(path)
-    handle_image_faces(path)
+    iterate_over_directory(path)
+    # handle_image_faces(path)
 
 if __name__ == '__main__':
     main(sys.argv[1:])

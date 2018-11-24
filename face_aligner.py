@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from PIL import Image, ImageDraw
 import cv2
@@ -64,7 +65,7 @@ class FaceAligner:
         print("Got scale:", scale)
         return scale
 
-    def save_rotated_face(self, rectangle, landmark, image_array):
+    def save_rotated_face(self, rectangle, landmark, image_array, file_name="output.jpg"):
         top, right, bottom, left = rectangle
         angle, left_eye, right_eye, eye_center = self.get_eyes_angle(landmark, image_array)
         zoom_scale = self.get_image_relative_scale(rectangle, left_eye, right_eye)
@@ -83,7 +84,7 @@ class FaceAligner:
         (w, h) = (image_width, image_height)
         output = cv2.warpAffine(image_array, M, (w, h),
             flags=cv2.INTER_CUBIC)
-        Image.fromarray(np.uint8(output)).save("output.jpg")
+        Image.fromarray(np.uint8(output)).save(os.path.join("manual_filter", file_name))
 
         # dummy_image = Image.fromarray(image_array).rotate(angle, center=eye_center)
         # dummy_array = np.asarray(dummy_image)
