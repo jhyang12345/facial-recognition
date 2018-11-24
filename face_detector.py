@@ -3,7 +3,6 @@ from PIL import Image
 import cv2
 import face_recognition
 from face_aligner import FaceAligner
-from mtcnn.mtcnn import MTCNN
 import numpy as np
 from argparse import ArgumentParser
 
@@ -11,62 +10,7 @@ def get_new_file_name():
     value = int(time.time() * 1000)
     return str(value)
 
-class MTCNN_detector:
-    def __init__(self, output_path, filename):
-        self.detector = None
-        self.output_path = output_path
-        self.filename = filename.split(".")[0]
-        self.minimum_threshold = 100
-        self.init_detector()
-
-    def init_detector(self):
-        self.detector = MTCNN()
-
-    def mtcnn_find_faces(self, img):
-        return self.detector.detect_faces(img)
-
-    def get_bounding_boxes(self, img):
-        ret = []
-        for match in self.mtcnn_find_faces(img):
-            ret.append(match["box"])
-        return ret
-
-    # [x, y, width, height]
-    def get_image_crop_bounds(self, img):
-        boxes = self.get_bounding_boxes(img)
-        ret = []
-        for box in boxes:
-            ret.append(self.get_centered_box(box))
-        return ret
-
-    def get_centered_box(self, box):
-        x, y, width, height = box
-        length = max(width, height)
-        if(width == length):
-            y = int(y - (length - height) / 2)
-        if(height == length):
-            x = int(x - (length - width) / 2)
-        return [x, y, length, length]
-
-    # image is already opencv frame
-    def crop_images_with_box(self, img, frame):
-        bounds = self.get_image_crop_bounds(img)
-        i = 0
-        for bound in bounds:
-            x, y, width, height = bound
-            if width <= self.minimum_threshold or height <= self.minimum_threshold:
-                continue
-            try:
-                print("iterating through bound", bound)
-                sub_image = img[y:y+height, x:x+width]
-                cv2.imwrite(os.path.join(self.output_path, "{}_{}_{}.jpg".format(self.filename, frame, i)), sub_image)
-            except Exception as e:
-                print(e)
-                continue
-            i += 1
-
 def save_faces(im, face_locations, output_path="manual_filter"):
-    extension = im.filename.split('.')[-1]
     img = np.asarray(im)
     for (top, right, bottom, left) in face_locations:
         sub_image = img[top:bottom, left:right] # left upper right lower
@@ -78,7 +22,7 @@ def save_faces(im, face_locations, output_path="manual_filter"):
 # face_recognition loaded image file passed to image
 def find_face_locations(image, image_path=""):
     face_locations = face_recognition.face_locations(image,
-            number_of_times_to_upsample=0, model="cnn")
+            number_of_times_to_upsample=1, model="cnn")
     print("Processing: {}, Number of faces found: {}"
         .format(os.path.basename(image_path), len(face_locations)))
     return face_locations
@@ -94,18 +38,24 @@ def find_face_landmarks_with_path(image_path):
 
 def handle_image_faces(image_path):
     image = face_recognition.load_image_file(image_path)
+    handle_image_array_faces(image)
+
+def handle_image_array_faces(image, base_image_name="", output_directory="manual_filter"):
     face_locations = face_recognition.face_locations(image,
             number_of_times_to_upsample=1, model="cnn")
     face_landmarks_list = face_recognition.face_landmarks(image)
     if len(face_locations) != len(face_landmarks_list):
         print("landmarks and face_locations do not match! Found faces: {}".format(len(face_locations)))
-        save_faces(Image.open(image_path), face_locations)
+        save_faces(Image.fromarray(image), face_locations)
         return
-    aligner = FaceAligner()
+    aligner = FaceAligner(output_directory=output_directory)
     for i in range(len(face_landmarks_list)):
         face_location = face_locations[i]
         face_landmarks = face_landmarks_list[i]
-        aligner.save_rotated_face(face_location, face_landmarks, image, file_name="{}_{}.jpg".format(get_new_file_name(), i))
+        if base_image_name:
+            aligner.save_rotated_face(face_location, face_landmarks, image, file_name="{}_{}.jpg".format(base_image_name, i))
+        else:
+            aligner.save_rotated_face(face_location, face_landmarks, image, file_name="{}_{}.jpg".format(get_new_file_name(), i))
 
 def iterate_over_directory(directory_path):
     files = os.listdir(directory_path)

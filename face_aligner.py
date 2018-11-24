@@ -28,11 +28,12 @@ def draw_landmarks(left_center, right_center, nose_center, image_array):
 
 class FaceAligner:
     def __init__(self, desired_left_eye=(0.35, 0.35), desired_image_width=128,
-            desired_image_height=128):
+            desired_image_height=128, output_directory="manual_filter"):
         self.desired_left_eye = desired_left_eye
         self.desired_right_eye = (1 - desired_left_eye[0], desired_left_eye[1])
         self.desired_image_width = desired_image_width
         self.desired_image_height = desired_image_height
+        self.output_directory = output_directory
 
     def align(self, image, rect):
         pass
@@ -84,7 +85,7 @@ class FaceAligner:
         (w, h) = (image_width, image_height)
         output = cv2.warpAffine(image_array, M, (w, h),
             flags=cv2.INTER_CUBIC)
-        Image.fromarray(np.uint8(output)).save(os.path.join("manual_filter", file_name))
+        Image.fromarray(np.uint8(output)).save(os.path.join(self.output_directory, file_name))
 
         # dummy_image = Image.fromarray(image_array).rotate(angle, center=eye_center)
         # dummy_array = np.asarray(dummy_image)

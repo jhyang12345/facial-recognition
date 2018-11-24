@@ -1,10 +1,11 @@
 import sys, os
 import cv2
 from PIL import Image
-from mtcnn.mtcnn import MTCNN
 import numpy as np
 from optparse import OptionParser
-from face_detector import find_face_locations, save_faces, get_new_file_name, MTCNN_detector
+import face_recognition
+from face_detector import find_face_locations, save_faces, get_new_file_name, handle_image_array_faces
+from face_aligner import FaceAligner
 
 def save_faces_from_frame(frame, face_locations, destination_path="outputs_from_video"):
     i = 0
@@ -13,21 +14,22 @@ def save_faces_from_frame(frame, face_locations, destination_path="outputs_from_
         file_name = get_new_file_name() + "_" + str(i)
         cv2.imwrite(os.path.join(destination_path, file_name) + ".jpg", sub_face)
 
-def get_faces(video_file_path, skip_frame=120):
+def get_faces(video_file_path, skip_frame=80):
     print(video_file_path)
     filename = os.path.basename(video_file_path)
-    detector = MTCNN_detector("outputs_from_video", filename)
     cap = cv2.VideoCapture(video_file_path)
+
     i = 0
     while(cap.isOpened()):
         ret, frame = cap.read()
         try:
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             if i % skip_frame == 0:
                 print("Iterating frame: {}".format(i))
-                # detector.crop_images_with_box(frame, i)
-                face_locations = find_face_locations(frame)
-                save_faces_from_frame(frame, face_locations)
+                face_locations = find_face_locations(frame, video_file_path)
+                face_landmarks_list = face_recognition.face_landmarks(frame)
+                handle_image_array_faces(frame, base_image_name=filename.split(".")[0],
+                    output_directory="outputs_from_video")
                 pass
         except Exception as e:
             print(e)
