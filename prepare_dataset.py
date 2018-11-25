@@ -1,4 +1,4 @@
-import os
+import os, sys
 from collections import defaultdict
 import random
 from PIL import Image
@@ -34,3 +34,17 @@ def normalize_array(np_array):
     np_array = np_array - half
     np_array = np_array / half
     return np_array
+
+def filter_images_in_path(filter_path, min_size=100):
+    images = os.listdir(filter_path)
+    for image in images:
+        full_path = os.path.join(filter_path, image)
+        im = Image.open(full_path)
+        print(full_path)
+        if im.size[0] < min_size:
+            print("Filtered out! " + full_path)
+
+
+if __name__ == '__main__':
+    filter_path = sys.argv[-1]
+    filter_images_in_path(filter_path)
