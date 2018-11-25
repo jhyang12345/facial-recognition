@@ -14,7 +14,7 @@ def save_faces_from_frame(frame, face_locations, destination_path="outputs_from_
         file_name = get_new_file_name() + "_" + str(i)
         cv2.imwrite(os.path.join(destination_path, file_name) + ".jpg", sub_face)
 
-def get_faces(video_file_path, skip_frame=80):
+def get_faces(video_file_path, skip_frame=40):
     print(video_file_path)
     filename = os.path.basename(video_file_path)
     cap = cv2.VideoCapture(video_file_path)
@@ -28,7 +28,8 @@ def get_faces(video_file_path, skip_frame=80):
                 print("Iterating frame: {}".format(i))
                 face_locations = find_face_locations(frame, video_file_path)
                 face_landmarks_list = face_recognition.face_landmarks(frame)
-                handle_image_array_faces(frame, base_image_name=filename.split(".")[0],
+                handle_image_array_faces(frame,
+                    base_image_name="{}_{}".format(filename.split(".")[0], i),
                     output_directory="outputs_from_video")
                 pass
         except Exception as e:
@@ -53,7 +54,8 @@ def main(argv):
     if options.path:
         print("Path accepted")
         path = options.path
-        video_directory_pipeline(path)
+        # video_directory_pipeline(path)
+        get_faces(path)
     else:
         print("No path given!")
         return

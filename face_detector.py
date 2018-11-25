@@ -10,19 +10,26 @@ def get_new_file_name():
     value = int(time.time() * 1000)
     return str(value)
 
-def save_faces(im, face_locations, output_path="manual_filter"):
+def save_faces(im, face_locations, output_path="manual_filter",
+                base_file_name=""):
     img = np.asarray(im)
+    i = 0
     for (top, right, bottom, left) in face_locations:
         sub_image = img[top:bottom, left:right] # left upper right lower
         sub_image = Image.fromarray(np.uint8(sub_image))
-        sub_image.save(
-            os.path.join(output_path, get_new_file_name() + ".jpg"))
+        if base_file_name:
+            sub_image.save(
+                os.path.join(output_path, "{}_{}.jpg".format(base_file_name, i)))
+        else:
+            sub_image.save(
+                os.path.join(output_path, "{}_{}.jpg".format(get_new_file_name(), i)))
+        i += 1
     print("Saved {} new images".format(len(face_locations)))
 
 # face_recognition loaded image file passed to image
 def find_face_locations(image, image_path=""):
     face_locations = face_recognition.face_locations(image,
-            number_of_times_to_upsample=1, model="cnn")
+            number_of_times_to_upsample=0, model="cnn")
     print("Processing: {}, Number of faces found: {}"
         .format(os.path.basename(image_path), len(face_locations)))
     return face_locations
@@ -42,11 +49,11 @@ def handle_image_faces(image_path):
 
 def handle_image_array_faces(image, base_image_name="", output_directory="manual_filter"):
     face_locations = face_recognition.face_locations(image,
-            number_of_times_to_upsample=1, model="cnn")
+            number_of_times_to_upsample=0, model="cnn")
     face_landmarks_list = face_recognition.face_landmarks(image)
     if len(face_locations) != len(face_landmarks_list):
         print("landmarks and face_locations do not match! Found faces: {}".format(len(face_locations)))
-        save_faces(Image.fromarray(image), face_locations)
+        save_faces(Image.fromarray(image), face_locations, output_path=output_directory)
         return
     aligner = FaceAligner(output_directory=output_directory)
     for i in range(len(face_landmarks_list)):

@@ -6,6 +6,8 @@ examples
 outputs_from_video
 filtered_negative/*
 filtered_positive/*
+filtered_unclear/*
+trash/*
 *.mp4
 *.mkv
 *.webm
