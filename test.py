@@ -6,10 +6,10 @@ from cnn_models.cnn import CNN
 
 
 def main():
-    parser = OptionParser
-    parser.add_options("-p", "--path", dest="path")
-    parser.add_options("-d", "--directory", dest="directory")
-    parser.add_options("-m", "--model", dest="model")
+    parser = OptionParser()
+    parser.add_option("-p", "--path", dest="path")
+    parser.add_option("-d", "--directory", dest="directory")
+    parser.add_option("-m", "--model", dest="model")
     options, args = parser.parse_args()
     path = ""
     directory = ""
@@ -41,7 +41,8 @@ def main():
         model.load_model()
     except Exception as e:
         print("Model should be pretrained!")
-    
+
+
 
 if __name__ == '__main__':
     main()
