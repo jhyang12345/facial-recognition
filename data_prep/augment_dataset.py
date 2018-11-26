@@ -5,7 +5,6 @@ from keras.preprocessing.image import load_img, img_to_array
 from imgaug import augmenters as iaa
 from PIL import Image
 import numpy as np
-from data_prep.prepare_dataset import preprocess_image, filter_images_in_path
 from util import create_and_return_directory
 
 sometimes = lambda aug: iaa.Sometimes(0.5, aug)
@@ -22,7 +21,7 @@ seq = iaa.Sequential([
     random_order=True)
 
 # save augmented versions of the given image in a parallel directory called augmented
-def augment_image(full_path, times=10):
+def augment_image_save(full_path, times=10):
     file_path = os.path.dirname(full_path)
     file_name = os.path.basename(full_path)
     file_head = file_name.split(".")[0]
@@ -41,12 +40,29 @@ def augment_image(full_path, times=10):
     im = Image.fromarray(np.uint8(original))
     im.save(os.path.join(new_path, file_name))
 
+def augment_image(full_path, times=10):
+    original = [load_img(full_path, target_size=(128, 128))]
+    ret = [load_img(full_path, target_size=(128, 128)) for _ in range(times)]
+    ret = [img_to_array(item) for item in ret]
+    images = seq.augment_images(ret)
+    images.append(original)
+    return images
 
 def augment_directory(directory):
     images = filter_images_in_path(directory)
     for image in images:
         full_path = os.path.join(directory, image)
-        augment_image(full_path)
+        augment_image_save(full_path)
+
+def filter_images_in_path(filter_path, min_size=80):
+    images = os.listdir(filter_path)
+    ret = []
+    for image in images:
+        full_path = os.path.join(filter_path, image)
+        im = Image.open(full_path)
+        if(im.size[0] > min_size):
+            ret.append(image)
+    return ret
 
 def main():
     parser = OptionParser()

@@ -5,24 +5,47 @@ from PIL import Image
 from sklearn.datasets import load_files
 from keras.preprocessing.image import load_img, save_img, img_to_array
 import numpy as np
-import random
+from data_prep.augment_dataset import augment_image
 
 # data ratio should be close to actual data distribution
 # load files function reads directory and extracts filename and target class
 # files should be under directory/target_class/files...
 # positive is comprised of manual_filter and filtered_positive
-def load_dataset_files(positive_path="datasets/positive", negative_path="datasets/negative"):
+def load_dataset_files(positive_path="datasets/positive", negative_path="datasets/negative",
+                            validation_ratio=0.2):
     positive_images = filter_images_in_path(positive_path)
     negative_images = filter_images_in_path(negative_path)
-    positives = []
-    negatives = []
-    for image in positive_images:
-        full_path = os.path.join(positive_path, image)
-        positives.append(preprocess_image(full_path))
-    for image in negative_images:
-        full_path = os.path.join(negative_path, image)
-        negatives.append(preprocess_image(full_path))
-    return positives, negatives
+    positive_images = [os.path.join(positive_path, image) for image in positive_images]
+    negative_images = [os.path.join(negative_path, image) for image in negative_images]
+    positive_output = [[1] for _ in range(len(positive_images))]
+    negative_output = [[0] for _ in range(len(negative_images))]
+
+    input_dataset = positive_images + negative_images
+    output_dataset = positive_output + negative_output
+
+    dataset_size = len(positive_images + negative_images)
+    validation_size = int(dataset_size * validation_ratio)
+    validation_indexes = random.sample(list(range(dataset_size)), validation_size)
+    training_indexes = [i for i in list(range(dataset_size)) if i not in validation_indexes]
+    random.shuffle(validation_indexes)
+    random.shuffle(training_indexes)
+
+    training_input = [input_dataset[i] for i in training_indexes]
+    training_output = [output_dataset[i] for i in training_indexes]
+    validation_input = [input_dataset[i] for i in validation_indexes]
+    validation_output = [output_dataset[i] for i in validation_indexes]
+
+    return training_input, training_output, validation_input, validation_output
+
+    # positives = []
+    # negatives = []
+    # for image in positive_images:
+    #     full_path = os.path.join(positive_path, image)
+    #     positives.append(preprocess_image(full_path))
+    # for image in negative_images:
+    #     full_path = os.path.join(negative_path, image)
+    #     negatives.append(preprocess_image(full_path))
+    # return positives, negatives
 
 # must normalize image prior to adding to list
 def preprocess_image(full_path):
@@ -49,21 +72,16 @@ def filter_images_in_path(filter_path, min_size=80):
     return ret
 
 def load_dataset(validation_ratio=0.2):
-    positives, negatives = load_dataset_files()
-    positive_output = [[1] for _ in range(len(positives))]
-    negative_output = [[0] for _ in range(len(negatives))]
-    input_dataset = positives + negatives
-    output_dataset = positive_output + negative_output
-    validation_size = int(len(input_dataset) * validation_ratio)
+    training_input_files, training_output, validation_input_files, validation_output = load_dataset_files()
 
-    validation_indexes = random.sample(list(range(len(input_dataset))), validation_size)
-    training_indexes = [i for i in list(range(len(input_dataset))) if i not in validation_indexes]
-    random.shuffle(training_indexes)
-
-    training_input = [input_dataset[i] for i in training_indexes]
-    training_output = [output_dataset[i] for i in training_indexes]
-    validation_input = [input_dataset[i] for i in validation_indexes]
-    validation_output = [output_dataset[i] for i in validation_indexes]
+    # need to apply preprocessing to arrays before using them as input
+    # TODO: need to append to output to match the size of augmented input
+    training_input = []
+    validation_input = []
+    for image in training_input_files:
+        training_input = training_input + augment_image(image)
+    for image in validation_input_files:
+        validation_input = validation_input + augment_image(image)
 
     training_input = np.asarray(training_input, dtype=np.float32)
     training_output = np.asarray(training_output, dtype=np.float32)
