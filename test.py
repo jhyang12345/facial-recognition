@@ -2,8 +2,13 @@ import sys, os
 from optparse import OptionParser
 from cnn_models.hotdog import DeepDog
 from cnn_models.cnn import CNN
+from data_prep.load_test_data import load_image_from_path, load_images_from_directory
 
+def test_model_individual(model, image_path):
+    input_ = load_image_from_path(image_path)
 
+def test_model_directory(model, image_directory):
+    input_ = load_images_from_directory(image_directory)
 
 def main():
     parser = OptionParser()
