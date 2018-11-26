@@ -4,6 +4,7 @@ from data_prep.prepare_dataset import load_dataset
 from cnn_models.hotdog import DeepDog
 from cnn_models.cnn import CNN
 from trainers.trainer import Trainer
+from config_helper import retrieve_option_model
 
 def main():
     parser = OptionParser()
@@ -11,13 +12,7 @@ def main():
     options, args = parser.parse_args()
     model = None
     if options.model:
-        model_type = options.model.lower()
-        if model_type == "hotdog":
-            model = DeepDog()
-        elif model_type == "cnn":
-            model = CNN()
-        else:
-            model = DeepDog()
+        model = retrieve_option_model(options.model)
     else:
         print("No Model specified!")
     Trainer(model)

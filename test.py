@@ -3,6 +3,7 @@ from optparse import OptionParser
 from cnn_models.hotdog import DeepDog
 from cnn_models.cnn import CNN
 from data_prep.load_test_data import load_image_from_path, load_images_from_directory
+from config_helper import retrieve_option_model
 
 def test_model_individual(model, image_path):
     input_ = load_image_from_path(image_path)
@@ -29,19 +30,7 @@ def main():
         print("No path or directory given!")
         return
 
-    if options.model:
-        model_type = options.model.lower()
-    else:
-        model_type = "default"
-
-    model = None
-    if model_type == "hotdog":
-        model = DeepDog()
-    elif model_type == "cnn":
-        model = CNN()
-    else:
-        model = DeepDog()
-
+    model = retrieve_option_model(options.model)
     try:
         model.load_model()
     except Exception as e:
