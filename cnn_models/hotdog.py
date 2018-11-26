@@ -2,6 +2,7 @@ from keras.layers import Input, Convolution2D, SeparableConvolution2D, \
                 GlobalAveragePooling2D, GlobalMaxPooling2D, \
                 Dense, Activation, BatchNormalization
 from keras.models import Sequential, Model
+from keras.callbacks import ModelCheckpoint
 
 class DeepDog:
     def __init__(self, input_shape=(128, 128, 3)):
