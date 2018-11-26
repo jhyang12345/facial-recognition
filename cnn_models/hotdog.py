@@ -11,6 +11,9 @@ class DeepDog:
         self.input_shape = input_shape
         self.alpha = 1
         self.model = None
+        self.checkpoint_path = 'models/hotdog.best.hdf5'
+        self.checkpointer = ModelCheckpoint(filepath=self.checkpoint_path, verbose=1,
+                                save_best_only=True)
         self.build_model()
         self.model.summary()
 
@@ -62,6 +65,9 @@ class DeepDog:
         # not sure what type of optimizer or loss function to use
         self.model.compile(loss='binary_crossentropy', optimizer='adam',
                                 metrics=['accuracy'])
+
+    def load_model(self):
+        self.model.load_weights(self.checkpoint_path)
 
     # for this model type kernel size will be equal to 3
     def apply_separable_layer(self, x, filters, activation_type, strides=(1, 1)):

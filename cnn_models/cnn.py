@@ -11,6 +11,9 @@ class CNN:
         self.input_shape = input_shape
         self.alpha = 1
         self.model = None
+        self.checkpoint_path = ''
+        self.checkpointer = ModelCheckpoint(filepath=self.checkpoint_path, verbose=1,
+                                save_best_only=True)
         self.build_model()
         self.model.summary()
 
@@ -67,6 +70,9 @@ class CNN:
         # not sure what type of optimizer or loss function to use
         self.model.compile(loss='binary_crossentropy', optimizer='adam',
                                 metrics=['accuracy'])
+
+    def load_model(self):
+        self.model.load_weights(self.checkpoint_path)
 
 if __name__ == '__main__':
     cnn = CNN()

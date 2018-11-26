@@ -6,8 +6,7 @@ class Trainer:
         self.model_object = model_object
         self.model = model_object.model
         self.epochs = 20
-        self.checkpointer = ModelCheckpoint(filepath='models/detector.best.hdf5', verbose=1,
-                                save_best_only=True)
+        self.checkpointer = model_object.checkpointer
         self.prepare_dataset()
         self.train()
 
