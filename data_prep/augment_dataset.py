@@ -5,22 +5,28 @@ from keras.preprocessing.image import load_img, img_to_array
 from imgaug import augmenters as iaa
 from PIL import Image
 import numpy as np
-from data_prep.prepare_dataset import preprocess_image
+from data_prep.prepare_dataset import preprocess_image, filter_images_in_path
 from util import create_and_return_directory
 
+sometimes = lambda aug: iaa.Sometimes(0.5, aug)
+
+seq = iaa.Sequential([
+        iaa.GaussianBlur(sigma=(0, 0.8)),
+        iaa.Affine(
+            scale=(1.0, 1.3),
+            translate_percent={"x": (-0.1, 0.1), "y": (-0.1, 0.1)},
+            rotate=(-30, 30),
+        ),
+        iaa.Add((-45, 45)),
+    ],
+    random_order=True)
+
+# save augmented versions of the given image in a parallel directory called augmented
 def augment_image(full_path, times=10):
-    seq = iaa.Sequential([
-            iaa.GaussianBlur(sigma=(0, 0.8)),
-            iaa.Affine(
-                scale=(1.0, 1.5),
-                translate_percent={"x": (-0.1, 0.1), "y": (-0.1, 0.1)},
-                rotate=(-30, 30),
-            ),
-        ],
-        random_order=True)
     file_path = os.path.dirname(full_path)
     file_name = os.path.basename(full_path)
     file_head = file_name.split(".")[0]
+    original = load_img(full_path, target_size=(128, 128))
     ret = [load_img(full_path, target_size=(128, 128)) for _ in range(times)]
     ret = [img_to_array(item) for item in ret]
     images = seq.augment_images(ret)
@@ -32,9 +38,12 @@ def augment_image(full_path, times=10):
         new_name = new_name + ".jpg"
         im = Image.fromarray(np.uint8(image))
         im.save(os.path.join(new_path, new_name))
+    im = Image.fromarray(np.uint8(original))
+    im.save(os.path.join(new_path, file_name))
+
 
 def augment_directory(directory):
-    images = os.listdir(directory)
+    images = filter_images_in_path(directory)
     for image in images:
         full_path = os.path.join(directory, image)
         augment_image(full_path)

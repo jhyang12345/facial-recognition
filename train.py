@@ -15,6 +15,7 @@ def main():
         model = retrieve_option_model(options.model)
     else:
         print("No Model specified!")
+        model = retrieve_option_model("")
     Trainer(model)
 
 if __name__ == '__main__':

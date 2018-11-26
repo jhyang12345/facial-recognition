@@ -10,6 +10,7 @@ import random
 # data ratio should be close to actual data distribution
 # load files function reads directory and extracts filename and target class
 # files should be under directory/target_class/files...
+# positive is comprised of manual_filter and filtered_positive
 def load_dataset_files(positive_path="datasets/positive", negative_path="datasets/negative"):
     positive_images = filter_images_in_path(positive_path)
     negative_images = filter_images_in_path(negative_path)
@@ -37,7 +38,7 @@ def normalize_array(np_array):
     np_array = np_array / half
     return np_array
 
-def filter_images_in_path(filter_path, min_size=100):
+def filter_images_in_path(filter_path, min_size=80):
     images = os.listdir(filter_path)
     ret = []
     for image in images:
