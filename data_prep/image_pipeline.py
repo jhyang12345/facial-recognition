@@ -1,15 +1,21 @@
 import sys
+from matplotlib.pyplot import imshow
 from face_detector import find_face_locations_with_path
 import numpy as np
 from PIL import Image, ImageDraw
 from data_prep.prepare_dataset import normalize_array
 
+def draw_rect(drawcontext, xy, outline=(0, 100, 255), width=4):
+    (x1, y1), (x2, y2) = xy
+    points = (x1, y1), (x2, y1), (x2, y2), (x1, y2), (x1, y1)
+    drawcontext.line(points, fill=outline, width=width)
+
 def get_image_with_drawn_boundaries(full_path, locations):
     pil_image = Image.open(full_path)
     draw = ImageDraw.Draw(pil_image)
     for (top, right, bottom, left) in locations:
-        draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 255))
-    pil_image.show()
+        draw_rect(draw, ((left, top), (right, bottom)))
+    imshow(np.asarray(pil_image))
 
 class ImageFeeder:
     def __init__(self, full_path):
