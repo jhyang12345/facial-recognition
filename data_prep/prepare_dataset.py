@@ -71,6 +71,16 @@ def filter_images_in_path(filter_path, min_size=80):
             ret.append(image)
     return ret
 
+def augmented_dataset(input_files, output):
+    print(len(input_files))
+    augmented_input = []
+    augmented_output = []
+    for i, image in enumerate(input_files):
+        augmented_images = [normalize_array(arr) for arr in augment_image(image)]
+        augmented_input = augmented_input + augmented_images
+        augmented_output = augmented_output + [output[i] for _ in range(len(augmented_images))]
+    return augmented_input, augmented_output
+
 def load_dataset(validation_ratio=0.2):
     training_input_files, training_output, validation_input_files, validation_output = load_dataset_files()
 
@@ -78,10 +88,8 @@ def load_dataset(validation_ratio=0.2):
     # TODO: need to append to output to match the size of augmented input
     training_input = []
     validation_input = []
-    for image in training_input_files:
-        training_input = training_input + augment_image(image)
-    for image in validation_input_files:
-        validation_input = validation_input + augment_image(image)
+    training_input, training_output = augmented_dataset(training_input_files, training_output)
+    validation_input, validation_output = augmented_dataset(validation_input_files, validation_output)
 
     training_input = np.asarray(training_input, dtype=np.float32)
     training_output = np.asarray(training_output, dtype=np.float32)
@@ -90,5 +98,6 @@ def load_dataset(validation_ratio=0.2):
     return training_input, training_output, validation_input, validation_output
 
 if __name__ == '__main__':
-    filter_path = sys.argv[-1]
-    load_dataset()
+    training_input, training_output, validation_input, validation_output = load_dataset()
+    print(training_input.shape, training_output.shape)
+    print(validation_input.shape, validation_output.shape)

@@ -21,7 +21,7 @@ seq = iaa.Sequential([
     random_order=True)
 
 # save augmented versions of the given image in a parallel directory called augmented
-def augment_image_save(full_path, times=10):
+def augment_image_save(full_path, times=9):
     file_path = os.path.dirname(full_path)
     file_name = os.path.basename(full_path)
     file_head = file_name.split(".")[0]
@@ -40,8 +40,9 @@ def augment_image_save(full_path, times=10):
     im = Image.fromarray(np.uint8(original))
     im.save(os.path.join(new_path, file_name))
 
-def augment_image(full_path, times=10):
-    original = [load_img(full_path, target_size=(128, 128))]
+# 9 times plus original equals 10
+def augment_image(full_path, times=9):
+    original = img_to_array(load_img(full_path, target_size=(128, 128)))
     ret = [load_img(full_path, target_size=(128, 128)) for _ in range(times)]
     ret = [img_to_array(item) for item in ret]
     images = seq.augment_images(ret)
