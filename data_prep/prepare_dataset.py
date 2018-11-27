@@ -71,6 +71,15 @@ def filter_images_in_path(filter_path, min_size=80):
             ret.append(image)
     return ret
 
+# shuffling should be done before turning into array
+def shuffle_in_order(input_data, output_data):
+    data_size = len(input_data)
+    indexes = list(range(data_size))
+    random.shuffle(indexes)
+    shuffled_input = [input_data[i] for i in indexes]
+    shuffled_output = [output_data[i] for i in indexes]
+    return shuffled_input, shuffled_output
+
 def augmented_dataset(input_files, output):
     print(len(input_files))
     augmented_input = []
@@ -84,12 +93,12 @@ def augmented_dataset(input_files, output):
 def load_dataset(validation_ratio=0.2):
     training_input_files, training_output, validation_input_files, validation_output = load_dataset_files()
 
-    # need to apply preprocessing to arrays before using them as input
-    # TODO: need to append to output to match the size of augmented input
     training_input = []
     validation_input = []
     training_input, training_output = augmented_dataset(training_input_files, training_output)
     validation_input, validation_output = augmented_dataset(validation_input_files, validation_output)
+    training_input, training_output = shuffle_in_order(training_input, training_output)
+    validation_input, validation_output = shuffle_in_order(validation_input, validation_output)
 
     training_input = np.asarray(training_input, dtype=np.float32)
     training_output = np.asarray(training_output, dtype=np.float32)
