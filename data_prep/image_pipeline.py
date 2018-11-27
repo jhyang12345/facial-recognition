@@ -1,8 +1,15 @@
 import sys
 from face_detector import find_face_locations_with_path
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 from data_prep.prepare_dataset import normalize_array
+
+def get_image_with_drawn_boundaries(full_path, locations):
+    pil_image = Image.open(full_path)
+    draw = ImageDraw.Draw(pil_image)
+    for (top, right, bottom, left) in locations:
+        draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 255))
+    pil_image.show()
 
 class ImageFeeder:
     def __init__(self, full_path):
@@ -10,6 +17,7 @@ class ImageFeeder:
         self.locations = []
         self.full_path = full_path
         self.image_to_input()
+        get_image_with_drawn_boundaries(full_path, self.locations)
 
     def image_to_input(self):
         full_path = self.full_path
