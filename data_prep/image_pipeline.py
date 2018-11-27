@@ -16,7 +16,7 @@ def draw_rect(drawcontext, xy, outline=(0, 100, 255), width=4):
     points = (x1, y1), (x2, y1), (x2, y2), (x1, y2), (x1, y1)
     drawcontext.line(points, fill=outline, width=width)
 
-def get_image_with_drawn_boundaries(full_path, locations):
+def display_image_with_drawn_boundaries(full_path, locations):
     pil_image = Image.open(full_path)
     pil_image = resize_for_display(pil_image)
     draw = ImageDraw.Draw(pil_image)
@@ -25,12 +25,12 @@ def get_image_with_drawn_boundaries(full_path, locations):
     imshow(np.asarray(pil_image))
 
 class ImageFeeder:
-    def __init__(self, full_path):
+    def __init__(self, full_path, resize=False):
         # maintain an array of face locations
         self.locations = []
         self.full_path = full_path
         self.image_to_input()
-        get_image_with_drawn_boundaries(full_path, self.locations)
+        display_image_with_drawn_boundaries(full_path, self.locations)
 
     def image_to_input(self):
         full_path = self.full_path
