@@ -1,5 +1,5 @@
 from keras.callbacks import ModelCheckpoint
-from data_prep.prepare_dataset import load_dataset
+from data_prep.prepare_dataset import load_dataset_from_file
 
 class Trainer:
     def __init__(self, model_object):
@@ -12,7 +12,7 @@ class Trainer:
 
     def prepare_dataset(self):
         training_input, training_output, validation_input, validation_output = \
-            load_dataset()
+            load_dataset_from_file()
         self.training_input = training_input
         self.training_output = training_output
         self.validation_input = validation_input

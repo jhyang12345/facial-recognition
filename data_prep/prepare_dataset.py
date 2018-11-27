@@ -6,6 +6,7 @@ from sklearn.datasets import load_files
 from keras.preprocessing.image import load_img, save_img, img_to_array
 import numpy as np
 from data_prep.augment_dataset import augment_image
+from util import create_and_return_directory
 
 # data ratio should be close to actual data distribution
 # load files function reads directory and extracts filename and target class
@@ -36,16 +37,6 @@ def load_dataset_files(positive_path="datasets/positive", negative_path="dataset
     validation_output = [output_dataset[i] for i in validation_indexes]
 
     return training_input, training_output, validation_input, validation_output
-
-    # positives = []
-    # negatives = []
-    # for image in positive_images:
-    #     full_path = os.path.join(positive_path, image)
-    #     positives.append(preprocess_image(full_path))
-    # for image in negative_images:
-    #     full_path = os.path.join(negative_path, image)
-    #     negatives.append(preprocess_image(full_path))
-    # return positives, negatives
 
 # must normalize image prior to adding to list
 def preprocess_image(full_path):
@@ -81,7 +72,6 @@ def shuffle_in_order(input_data, output_data):
     return shuffled_input, shuffled_output
 
 def augmented_dataset(input_files, output):
-    print(len(input_files))
     augmented_input = []
     augmented_output = []
     for i, image in enumerate(input_files):
@@ -93,10 +83,13 @@ def augmented_dataset(input_files, output):
 def load_dataset(validation_ratio=0.2):
     training_input_files, training_output, validation_input_files, validation_output = load_dataset_files()
 
+    print("Beginning augmentation! {} {}".format(len(training_input_files), len(validation_input_files)))
     training_input = []
     validation_input = []
     training_input, training_output = augmented_dataset(training_input_files, training_output)
+    print("Augmented Training Data")
     validation_input, validation_output = augmented_dataset(validation_input_files, validation_output)
+    print("Augmented Validation Data")
     training_input, training_output = shuffle_in_order(training_input, training_output)
     validation_input, validation_output = shuffle_in_order(validation_input, validation_output)
 
@@ -106,7 +99,29 @@ def load_dataset(validation_ratio=0.2):
     validation_output = np.asarray(validation_output, dtype=np.float32)
     return training_input, training_output, validation_input, validation_output
 
-if __name__ == '__main__':
+def save_dataset():
     training_input, training_output, validation_input, validation_output = load_dataset()
+    save_directory = create_and_return_directory(os.path.join("datasets", "binaries"))
+    np.save(os.path.join(save_directory, "training_input"), training_input)
+    np.save(os.path.join(save_directory, "training_output"), training_output)
+    np.save(os.path.join(save_directory, "validation_input"), validation_input)
+    np.save(os.path.join(save_directory, "validation_output"), validation_output)
+    print("Successfully saved datasets!")
+    return training_input, training_output, validation_input, validation_output
+
+def load_dataset_from_file():
+    save_directory = create_and_return_directory(os.path.join("datasets", "binaries"))
+    try:
+        training_input = np.load(os.path.join(save_directory, "training_input.npy"))
+        training_output = np.load(os.path.join(save_directory, "training_output.npy"))
+        validation_input = np.load(os.path.join(save_directory, "validation_input.npy"))
+        validation_output = np.load(os.path.join(save_directory, "validation_output.npy"))
+        return training_input, training_output, validation_input, validation_output
+    except Exception as e:
+        print("File or directory does not exist! Recreating dataset!")
+        return save_dataset()
+
+if __name__ == '__main__':
+    training_input, training_output, validation_input, validation_output = save_dataset()
     print(training_input.shape, training_output.shape)
     print(validation_input.shape, validation_output.shape)
