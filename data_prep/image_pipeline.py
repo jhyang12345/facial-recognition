@@ -1,4 +1,5 @@
-from face_detector import find_face_locations
+import sys
+from face_detector import find_face_locations_with_path
 import numpy as np
 from PIL import Image
 from data_prep.prepare_dataset import normalize_array
@@ -12,7 +13,7 @@ class ImageFeeder:
 
     def image_to_input(self):
         full_path = self.full_path
-        self.locations = find_face_locations(full_path)
+        self.locations = find_face_locations_with_path(full_path)
         im = np.asarray(Image.open(full_path))
         if not self.locations:
             print("0 faces found!")
@@ -26,5 +27,5 @@ class ImageFeeder:
         return input_data
 
 if __name__ == '__main__':
-    
-    main()
+    image_path = sys.argv[-1]
+    ImageFeeder(image_path)
