@@ -5,6 +5,12 @@ import numpy as np
 from PIL import Image, ImageDraw
 from data_prep.prepare_dataset import normalize_array
 
+def resize_for_display(pil_image, max_width=600):
+    wpercent = (max_width / float(pil_image.size[0]))
+    hsize = int((float(pil_image.size[1]) * float(wpercent)))
+    pil_image = pil_image.resize((max_width, hsize), Image.ANTIALIAS)
+    return pil_image
+
 def draw_rect(drawcontext, xy, outline=(0, 100, 255), width=4):
     (x1, y1), (x2, y2) = xy
     points = (x1, y1), (x2, y1), (x2, y2), (x1, y2), (x1, y1)
@@ -12,6 +18,7 @@ def draw_rect(drawcontext, xy, outline=(0, 100, 255), width=4):
 
 def get_image_with_drawn_boundaries(full_path, locations):
     pil_image = Image.open(full_path)
+    pil_image = resize_for_display(pil_image)
     draw = ImageDraw.Draw(pil_image)
     for (top, right, bottom, left) in locations:
         draw_rect(draw, ((left, top), (right, bottom)))
