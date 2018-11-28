@@ -1,5 +1,4 @@
 import sys
-from optparse import OptionParser
 from argparse import ArgumentParser
 from data_prep.prepare_dataset import load_dataset
 from cnn_models.hotdog import DeepDog
@@ -28,7 +27,7 @@ def main():
         train_all()
     model = None
     if args.model:
-        model = retrieve_option_model(options.model)
+        model = retrieve_option_model(args.model)
     else:
         print("No Model specified!")
         model = retrieve_option_model("")
