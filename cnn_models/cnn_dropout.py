@@ -4,7 +4,7 @@ from keras.layers import Input, Convolution2D, SeparableConvolution2D, \
 from keras.models import Sequential, Model
 from keras.callbacks import ModelCheckpoint
 
-class CNNPool:
+class CNNDropout:
     def __init__(self, input_shape=(128, 128, 3)):
         self.image_width = input_shape[0]
         self.image_height = input_shape[1]
