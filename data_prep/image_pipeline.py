@@ -16,21 +16,23 @@ def draw_rect(drawcontext, xy, outline=(0, 100, 255), width=4):
     points = (x1, y1), (x2, y1), (x2, y2), (x1, y2), (x1, y1)
     drawcontext.line(points, fill=outline, width=width)
 
+def display_image_array(arr):
+    plt.imshow(arr)
+    plt.show()
+
 def display_image_with_drawn_boundaries(pil_image, locations):
     temp_image = pil_image.copy()
     draw = ImageDraw.Draw(temp_image)
     for (top, right, bottom, left) in locations:
         draw_rect(draw, ((left, top), (right, bottom)))
-    plt.imshow(np.asarray(temp_image))
-    plt.show()
+    display_image_array(np.asarray(temp_image))
 
 def display_cut_images(pil_image, locations):
     img = np.asarray(pil_image)
     i = 0
     for (top, right, bottom, left) in locations:
         sub_image = img[top:bottom, left:right] # left upper right lower
-        plt.imshow(sub_image)
-        plt.show()
+        display_image_array(sub_image)
 
 
 class ImageFeeder:

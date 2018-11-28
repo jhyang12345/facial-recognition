@@ -2,7 +2,6 @@ iu_images
 resized_faces
 manual_filter
 videos
-examples
 outputs_from_video
 filtered_negative/*
 filtered_positive/*
