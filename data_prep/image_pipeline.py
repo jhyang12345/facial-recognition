@@ -1,6 +1,6 @@
 import sys
-from matplotlib.pyplot import imshow
-from face_detector import find_face_locations_with_path
+import matplotlib.pyplot as plt
+from face_detector import find_face_locations_with_path, find_face_locations
 import numpy as np
 from PIL import Image, ImageDraw
 from data_prep.prepare_dataset import normalize_array
@@ -16,21 +16,29 @@ def draw_rect(drawcontext, xy, outline=(0, 100, 255), width=4):
     points = (x1, y1), (x2, y1), (x2, y2), (x1, y2), (x1, y1)
     drawcontext.line(points, fill=outline, width=width)
 
-def display_image_with_drawn_boundaries(full_path, locations):
-    pil_image = Image.open(full_path)
-    pil_image = resize_for_display(pil_image)
-    draw = ImageDraw.Draw(pil_image)
+def display_image_with_drawn_boundaries(pil_image, locations):
+    temp_image = pil_image.copy()
+    draw = ImageDraw.Draw(temp_image)
     for (top, right, bottom, left) in locations:
         draw_rect(draw, ((left, top), (right, bottom)))
-    imshow(np.asarray(pil_image))
+    plt.imshow(np.asarray(temp_image))
+    plt.show()
+
+def display_cut_images(pil_image, locations):
+    img = np.asarray(pil_image)
+    i = 0
+    for (top, right, bottom, left) in locations:
+        sub_image = img[top:bottom, left:right] # left upper right lower
+        plt.imshow(sub_image)
+        plt.show()
+
 
 class ImageFeeder:
-    def __init__(self, full_path, resize=False):
+    def __init__(self, full_path):
         # maintain an array of face locations
         self.locations = []
         self.full_path = full_path
         self.image_to_input()
-        display_image_with_drawn_boundaries(full_path, self.locations)
 
     def image_to_input(self):
         full_path = self.full_path
@@ -47,6 +55,26 @@ class ImageFeeder:
         input_data = np.asarray(input_data, dtype=np.float32)
         return input_data
 
+class ImageDisplayer:
+    def __init__(self, full_path, resize=True):
+        self.locations = []
+        self.full_path = full_path
+        image = self.image_resize()
+        display_image_with_drawn_boundaries(image, self.locations)
+        display_cut_images(image, self.locations)
+
+    def image_resize(self):
+        full_path = self.full_path
+        image = Image.open(full_path)
+        image = resize_for_display(image)
+        # find locations after resizing
+        self.locations = find_face_locations(np.asarray(image))
+        if not self.locations:
+            print("0 faces found!")
+            return
+        return image
+
+
 if __name__ == '__main__':
     image_path = sys.argv[-1]
-    ImageFeeder(image_path)
+    ImageDisplayer(image_path)
