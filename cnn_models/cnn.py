@@ -12,7 +12,7 @@ class CNN:
         self.input_shape = input_shape
         self.alpha = 1
         self.model = None
-        self.checkpoint_path = ''
+        self.checkpoint_path = 'models/regular_cnn.best.hdf5'
         self.checkpointer = ModelCheckpoint(filepath=self.checkpoint_path, verbose=1,
                                 save_best_only=True)
         self.build_model()
@@ -26,6 +26,7 @@ class CNN:
         # input format will usually be 128 or 2^7
         # strides of 2 halfs input shape
         # usually kernel sizes are in odd numbers
+        # kernel strides alternate between 1 and 2 so that we don't miss out
         x = Convolution2D(int(32 * alpha), (3, 3), strides=(2, 2), padding='same')(model_input)
         x = BatchNormalization()(x)
         x = Activation(activation_type)(x)
