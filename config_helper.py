@@ -5,7 +5,7 @@ from cnn_models.cnn_pool import CNNPool
 from cnn_models.cnn_dropout import CNNDropout
 
 def retrieve_option_model(model_type):
-    model_type = model_type.lower()
+    model_type = model_type.lower() if model_type else ""
     model = None
     if model_type == "hotdog":
         model = DeepDog()

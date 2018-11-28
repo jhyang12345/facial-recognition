@@ -3,13 +3,29 @@ from optparse import OptionParser
 from cnn_models.hotdog import DeepDog
 from cnn_models.cnn import CNN
 from data_prep.load_test_data import load_image_from_path, load_images_from_directory
+from data_prep.image_pipeline import ImageFeeder, ImageDisplayer
 from config_helper import retrieve_option_model
 
-def test_model_individual(model, image_path):
-    input_ = load_image_from_path(image_path)
+def get_boolean_from_output(output_data, threshold=0.5):
+    ret = []
+    for data in output_data:
+        if data[0] > threshold:
+            ret.append(True)
+        else:
+            ret.append(False)
+    return ret
 
-def test_model_directory(model, image_directory):
-    input_ = load_images_from_directory(image_directory)
+# pass loaded model as parameter
+def test_model_individual(model, image_path):
+    image_feeder = ImageFeeder(image_path)
+    input_data = image_feeder.input_data
+    output_data = model.model.predict(input_data)
+    location_values = get_boolean_from_output(output_data)
+    image_feeder.set_location_values(location_values)
+    return location_values
+
+# def test_model_directory(model, image_directory):
+#     input_ = load_images_from_directory(image_directory)
 
 def main():
     parser = OptionParser()
@@ -35,8 +51,7 @@ def main():
         model.load_model()
     except Exception as e:
         print("Model should be pretrained!")
-
-
+    print(test_model_individual(model, path))
 
 if __name__ == '__main__':
     main()

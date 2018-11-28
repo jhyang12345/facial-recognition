@@ -5,7 +5,7 @@ from keras.models import Sequential, Model
 from keras.callbacks import ModelCheckpoint
 
 class CNN:
-    def __init__(self, input_shape=(128, 128, 3)):
+    def __init__(self, input_shape=(128, 128, 3), summarize=True):
         self.image_width = input_shape[0]
         self.image_height = input_shape[1]
         self.channels = input_shape[2]
@@ -16,7 +16,7 @@ class CNN:
         self.checkpointer = ModelCheckpoint(filepath=self.checkpoint_path, verbose=1,
                                 save_best_only=True)
         self.build_model()
-        self.model.summary()
+        if summarize: self.model.summary()
 
     def build_model(self):
         model_input = Input(shape=self.input_shape)
