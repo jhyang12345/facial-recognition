@@ -31,8 +31,9 @@ class MakeClassifiedVideo:
         new_frames = []
         i = 0
         for frame in original_video.iter_frames():
-            self.get_classified_frame(frame, i)
             i += 1
+            if i % 2 == 0: continue
+            self.get_classified_frame(frame, i)
         print(count)
 
     def get_classified_frame(self, frame, i):
@@ -44,7 +45,7 @@ class MakeClassifiedVideo:
         frame_path = os.path.join(".", "frames")
         frame_name = "{}_{}.jpg".format(os.path.join(frame_path, "frame"), i)
         Image.fromarray(np.uint8(new_frame)).save(frame_name)
-        print("New frame extracted")
+        print("New frame extracted: {}".format(i))
 
 def main():
     parser = ArgumentParser()

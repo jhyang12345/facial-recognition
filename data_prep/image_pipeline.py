@@ -24,7 +24,7 @@ def display_image_array(arr):
 def get_drawn_array(arr, locations, values=[]):
     img_array = arr
     relative_width = max(arr.shape)
-    relative_width = relative_width // 150 + 1
+    relative_width = relative_width // 200 + 1
     for i, (top, right, bottom, left) in enumerate(locations):
         if not values:
             draw_cv2_rect(img_array, ((left, top), (right, bottom)))
