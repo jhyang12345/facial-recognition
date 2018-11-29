@@ -21,12 +21,10 @@ def display_image_array(arr):
     plt.imshow(arr)
     plt.show()
 
-def display_image_with_drawn_boundaries(pil_image, locations, values=[]):
-    temp_image = pil_image.copy()
-    img_array = np.asarray(temp_image, np.uint8)
-    relative_width = max(temp_image.size)
+def get_drawn_array(arr, locations, values=[]):
+    img_array = arr
+    relative_width = max(arr.shape)
     relative_width = relative_width // 150 + 1
-    draw = ImageDraw.Draw(temp_image)
     for i, (top, right, bottom, left) in enumerate(locations):
         if not values:
             draw_cv2_rect(img_array, ((left, top), (right, bottom)))
@@ -36,6 +34,12 @@ def display_image_with_drawn_boundaries(pil_image, locations, values=[]):
                 draw_cv2_rect(img_array, ((left, top), (right, bottom)), outline=(186,183,215), width=relative_width)
             else:
                 draw_cv2_rect(img_array, ((left, top), (right, bottom)), outline=(0,0,0), width=relative_width)
+    return img_array
+
+def display_image_with_drawn_boundaries(pil_image, locations, values=[]):
+    temp_image = pil_image.copy()
+    img_array = np.asarray(temp_image, np.uint8)
+    get_drawn_array(img_array, locations, values)
     display_image_array(img_array)
 
 def display_cut_images(pil_image, locations):
@@ -75,6 +79,35 @@ class ImageFeeder:
     def set_location_values(self, boolean_array):
         self.location_values = boolean_array
         display_image_with_drawn_boundaries(Image.open(self.full_path).convert("RGB"), self.locations, boolean_array)
+
+class ArrayFeeder:
+    def __init__(self, arr, target_size=(128, 128)):
+        self.locations = []
+        self.arr = arr
+        self.target_size = target_size
+        self.input_data = self.image_to_input()
+
+    def image_to_input(self):
+        self.locations = find_face_locations(self.arr)
+        im = self.arr
+        if not self.locations:
+            print("0 faces found!")
+            return
+        input_data = []
+        for location in self.locations:
+            top, right, bottom, left = location
+            sub_image = im[top:bottom, left:right]
+            sub_image = Image.fromarray(np.uint8(sub_image))
+            sub_image = sub_image.resize(self.target_size)
+            sub_image = np.asarray(sub_image, dtype=np.float32)
+            input_data.append(normalize_array(sub_image))
+        input_data = np.asarray(input_data, dtype=np.float32)
+        return input_data
+
+    def set_location_values(self, boolean_array):
+        self.location_values = boolean_array
+        return get_drawn_array(self.arr, self.locations, boolean_array)
+
 
 class ImageDisplayer:
     def __init__(self, full_path, resize=True):
