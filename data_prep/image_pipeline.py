@@ -4,6 +4,7 @@ from face_detector import find_face_locations_with_path, find_face_locations
 import numpy as np
 from PIL import Image, ImageDraw
 from data_prep.prepare_dataset import normalize_array
+import cv2
 
 def resize_for_display(pil_image, max_width=600):
     wpercent = (max_width / float(pil_image.size[0]))
@@ -11,10 +12,10 @@ def resize_for_display(pil_image, max_width=600):
     pil_image = pil_image.resize((max_width, hsize), Image.ANTIALIAS)
     return pil_image
 
-def draw_rect(drawcontext, xy, outline=(0, 100, 255), width=4):
+# img here is a numpy array or cv2 opened image
+def draw_cv2_rect(img, xy, outline=(0, 100, 255), width=4):
     (x1, y1), (x2, y2) = xy
-    points = (x1, y1), (x2, y1), (x2, y2), (x1, y2), (x1, y1)
-    drawcontext.line(points, fill=outline, width=width)
+    cv2.rectangle(img,(x1, y1), (x2, y2), outline, width)
 
 def display_image_array(arr):
     plt.imshow(arr)
@@ -22,19 +23,20 @@ def display_image_array(arr):
 
 def display_image_with_drawn_boundaries(pil_image, locations, values=[]):
     temp_image = pil_image.copy()
+    img_array = np.asarray(temp_image, np.uint8)
     relative_width = max(temp_image.size)
-    relative_width = relative_width // 100 + 1
+    relative_width = relative_width // 150 + 1
     draw = ImageDraw.Draw(temp_image)
     for i, (top, right, bottom, left) in enumerate(locations):
         if not values:
-            draw_rect(draw, ((left, top), (right, bottom)))
+            draw_cv2_rect(img_array, ((left, top), (right, bottom)))
         else:
             # POSITIVE MATCH
             if values[i]:
-                draw_rect(draw, ((left, top), (right, bottom)), outline=(186,183,215), width=relative_width)
+                draw_cv2_rect(img_array, ((left, top), (right, bottom)), outline=(186,183,215), width=relative_width)
             else:
-                draw_rect(draw, ((left, top), (right, bottom)), outline=(0,0,0), width=relative_width)
-    display_image_array(np.asarray(temp_image))
+                draw_cv2_rect(img_array, ((left, top), (right, bottom)), outline=(0,0,0), width=relative_width)
+    display_image_array(img_array)
 
 def display_cut_images(pil_image, locations):
     img = np.asarray(pil_image)
@@ -72,7 +74,7 @@ class ImageFeeder:
 
     def set_location_values(self, boolean_array):
         self.location_values = boolean_array
-        display_image_with_drawn_boundaries(Image.open(self.full_path), self.locations, boolean_array)
+        display_image_with_drawn_boundaries(Image.open(self.full_path).convert("RGB"), self.locations, boolean_array)
 
 class ImageDisplayer:
     def __init__(self, full_path, resize=True):
