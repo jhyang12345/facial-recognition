@@ -6,6 +6,7 @@ from data_prep.image_pipeline import ArrayFeeder
 from test import get_boolean_from_output
 from config_helper import retrieve_option_model
 from argparse import ArgumentParser
+from config_helper import retrieve_option_model
 
 def cut_video_clip(video_path, start, end):
     original_video = VideoFileClip(video_path)
@@ -28,13 +29,13 @@ def concatenate_frames_to_clip(frames_path, fps=10):
     clip.write_videofile("image_clip.mp4")
 
 class MakeClassifiedVideo:
-    def __init__(self, video_path):
+    def __init__(self, video_path, options_model):
         self.video_path = video_path
-        self.init_model()
+        self.init_model(options_model)
         self.iterate_through_video()
 
-    def init_model(self):
-        self.model = retrieve_option_model("")
+    def init_model(self, options_model=""):
+        self.model = retrieve_option_model(options_model)
         self.model.load_model()
 
     def iterate_through_video(self):
@@ -51,15 +52,16 @@ class MakeClassifiedVideo:
     def get_classified_frame(self, frame, i):
         array_feeder = ArrayFeeder(frame)
         input_data = array_feeder.input_data
+        frame_path = os.path.join(".", "frames")
+        frame_name = "{}_{}.jpg".format(os.path.join(frame_path, "frame"), i)
         output_data = []
         try:
             output_data = self.model.model.predict(input_data)
             location_values = get_boolean_from_output(output_data)
         except Exception as e:
+            Image.fromarray(np.uint8(frame)).save(frame_name)
             return
         new_frame = array_feeder.set_location_values(location_values)
-        frame_path = os.path.join(".", "frames")
-        frame_name = "{}_{}.jpg".format(os.path.join(frame_path, "frame"), i)
         Image.fromarray(np.uint8(new_frame)).save(frame_name)
         print("New frame extracted: {}".format(i))
 
@@ -69,6 +71,7 @@ def main():
     parser.add_argument("-s", "--start", dest="start")
     parser.add_argument("-e", "--end", dest="end")
     parser.add_argument("-m", "--make", dest="make")
+    parser.add_argument("--model", dest="model")
     parser.add_argument("-f", "--frames", dest="frame")
     args = parser.parse_args()
     if args.cut:
@@ -78,7 +81,7 @@ def main():
         cut_video_clip(path, start, end)
     elif args.make:
         path = args.make
-        MakeClassifiedVideo(path)
+        MakeClassifiedVideo(path, args.model)
     elif args.frame:
         path = args.frame
         concatenate_frames_to_clip(path)
