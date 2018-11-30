@@ -89,6 +89,7 @@ class ArrayFeeder:
 
     def image_to_input(self):
         self.locations = find_face_locations(self.arr)
+
         im = self.arr
         if not self.locations:
             print("0 faces found!")
