@@ -6,10 +6,12 @@ from data_prep.load_test_data import load_image_from_path, load_images_from_dire
 from data_prep.image_pipeline import ImageFeeder, ImageDisplayer
 from config_helper import retrieve_option_model
 
+# There should be only one person match per image
 def get_boolean_from_output(output_data, threshold=0.5):
     ret = []
+    max_value = np.max(output_data)
     for data in output_data:
-        if data[0] > threshold:
+        if data[0] == max_value:
             ret.append(True)
         else:
             ret.append(False)

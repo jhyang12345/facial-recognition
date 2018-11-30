@@ -8,7 +8,7 @@ filtered_positive/*
 filtered_unclear/*
 datasets/*
 trash/*
-frames/*
+
 *.mp4
 *.mkv
 *.webm

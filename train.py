@@ -12,9 +12,15 @@ def train_all():
     print("Training all!")
     deep_dog = DeepDog()
     Trainer(deep_dog)
-    print("Trained DeepDog")
+    
     cnn = CNN()
     Trainer(cnn)
+
+    cnn_pool = CNNPool()
+    Trainer(cnn_pool)
+
+    cnn_dropout = CNNDropout()
+    Trainer(cnn_dropout)
 
 
 def main():
