@@ -8,6 +8,13 @@ import numpy as np
 from data_prep.augment_dataset import augment_image
 from util import create_and_return_directory
 
+def alter_data_ratio(positive_images, negative_images, negative_ratio=1.5):
+    positive_size = len(positive_images)
+    negative_target_size = int(positive_size * negative_ratio)
+    extra_negative_size = max(negative_target_size - len(negative_images), 0)
+    extra_negatives = random.sample(negative_images, extra_negative_size)
+    negative_images = negative_images + extra_negatives
+
 # data ratio should be close to actual data distribution
 # load files function reads directory and extracts filename and target class
 # files should be under directory/target_class/files...
@@ -18,6 +25,10 @@ def load_dataset_files(positive_path="datasets/positive", negative_path="dataset
     negative_images = filter_images_in_path(negative_path)
     positive_images = [os.path.join(positive_path, image) for image in positive_images]
     negative_images = [os.path.join(negative_path, image) for image in negative_images]
+
+    # altering the size of negative_images to better reflect real life ratios
+    alter_data_ratio(positive_images, negative_images)
+
     positive_output = [[1] for _ in range(len(positive_images))]
     negative_output = [[0] for _ in range(len(negative_images))]
 
