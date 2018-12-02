@@ -14,7 +14,7 @@ def get_boolean_from_output(output_data, threshold=0.5):
         return ret
     max_value = np.max(output_data)
     for data in output_data:
-        if data[0] == max_value:
+        if data[0] > threshold and data[0] == max_value:
             ret.append(True)
         else:
             ret.append(False)

@@ -27,7 +27,7 @@ def load_dataset_files(positive_path="datasets/positive", negative_path="dataset
     negative_images = [os.path.join(negative_path, image) for image in negative_images]
 
     # altering the size of negative_images to better reflect real life ratios
-    alter_data_ratio(positive_images, negative_images)
+    # alter_data_ratio(positive_images, negative_images)
 
     positive_output = [[1] for _ in range(len(positive_images))]
     negative_output = [[0] for _ in range(len(negative_images))]
