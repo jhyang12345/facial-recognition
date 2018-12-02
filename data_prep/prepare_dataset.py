@@ -12,7 +12,7 @@ def alter_data_ratio(positive_images, negative_images, negative_ratio=1.5):
     positive_size = len(positive_images)
     negative_target_size = int(positive_size * negative_ratio)
     extra_negative_size = max(negative_target_size - len(negative_images), 0)
-    extra_negatives = random.sample(negative_images, extra_negative_size)
+    extra_negatives = random.sample(negative_images, min(extra_negative_size, len(negative_images)))
     negative_images = negative_images + extra_negatives
 
 # data ratio should be close to actual data distribution

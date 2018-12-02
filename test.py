@@ -25,6 +25,7 @@ def test_model_individual(model, image_path):
     image_feeder = ImageFeeder(image_path)
     input_data = image_feeder.input_data
     output_data = model.model.predict(input_data)
+    print(output_data)
     location_values = get_boolean_from_output(output_data)
     image_feeder.set_location_values(location_values)
     return location_values
