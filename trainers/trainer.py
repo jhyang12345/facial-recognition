@@ -21,6 +21,7 @@ class Trainer:
     def train(self):
         self.model.fit(self.training_input, self.training_output,
                     epochs=self.epochs, validation_data=(self.validation_input, self.validation_output),
+                    batch_size=48,
                     callbacks=[self.checkpointer], verbose=1, shuffle=True)
 
 if __name__ == '__main__':
