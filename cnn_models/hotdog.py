@@ -11,6 +11,7 @@ class DeepDog:
         self.channels = input_shape[2]
         self.input_shape = input_shape
         self.alpha = 1
+        self.name = "hotdog"
         self.model = None
         self.checkpoint_path = 'models/hotdog.best.hdf5'
         self.checkpointer = ModelCheckpoint(filepath=self.checkpoint_path, verbose=1,

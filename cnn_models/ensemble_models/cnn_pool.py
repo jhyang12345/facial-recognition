@@ -1,19 +1,20 @@
 from keras.layers import Input, Convolution2D, SeparableConvolution2D, \
                 GlobalAveragePooling2D, GlobalMaxPooling2D, MaxPooling2D, \
-                Dense, Activation, BatchNormalization, Dropout
+                Dense, Activation, BatchNormalization
 from keras.models import Sequential, Model
 from keras.callbacks import ModelCheckpoint
 
-class CNNDropout:
-    def __init__(self, input_shape=(128, 128, 3), summarize=True):
+class CNNPool:
+    def __init__(self, input_layer, input_shape=(128, 128, 3), summarize=True):
+        self.input_layer = input_layer
         self.image_width = input_shape[0]
         self.image_height = input_shape[1]
         self.channels = input_shape[2]
         self.input_shape = input_shape
         self.alpha = 1
-        self.name = "cnn_dropout"
+        self.name = "cnn_pool"
         self.model = None
-        self.checkpoint_path = 'models/cnn_dropout.best.hdf5'
+        self.checkpoint_path = 'models/cnn_pool.best.hdf5'
         self.checkpointer = ModelCheckpoint(filepath=self.checkpoint_path, verbose=1,
                                 save_best_only=True)
         self.build_model()
@@ -23,8 +24,6 @@ class CNNDropout:
         model_input = Input(shape=self.input_shape)
         alpha = self.alpha
         activation_type = 'relu'
-        # applying dropout factor to prevent overfitting
-        dropout_factor = 0.4
 
         # input format will usually be 128 or 2^7
         # strides of 2 halfs input shape
@@ -45,8 +44,6 @@ class CNNDropout:
         # kernel size of 3  halfs the input dimensions
         x = MaxPooling2D(pool_size=(3, 3), strides=1, padding='same')(x)
 
-        x = Dropout(dropout_factor)(x)
-
         x = Convolution2D(int(128 * alpha), (3, 3), strides=(1, 1), padding='same')(x)
         x = BatchNormalization()(x)
         x = Activation(activation_type)(x)
@@ -57,8 +54,6 @@ class CNNDropout:
 
         x = MaxPooling2D(pool_size=(3, 3), strides=1, padding='same')(x)
 
-        x = Dropout(dropout_factor)(x)
-
         x = Convolution2D(int(256 * alpha), (3, 3), strides=(1, 1), padding='same')(x)
         x = BatchNormalization()(x)
         x = Activation(activation_type)(x)
@@ -68,8 +63,6 @@ class CNNDropout:
         x = Activation(activation_type)(x)
 
         x = MaxPooling2D(pool_size=(3, 3), strides=1, padding='same')(x)
-
-        x = Dropout(dropout_factor)(x)
 
         x = Convolution2D(int(512 * alpha), (3, 3), strides=(1, 1), padding='same')(x)
         x = BatchNormalization()(x)
@@ -85,7 +78,7 @@ class CNNDropout:
         # maybe add another dense layer in between
         out = Dense(1, activation='sigmoid')(x)
 
-        self.model = Model(model_input, out, name='cnn_dropout')
+        self.model = Model(model_input, out, name='cnn_pool')
         self.model.compile(loss='binary_crossentropy', optimizer='adam',
                                 metrics=['accuracy'])
 
