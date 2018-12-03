@@ -1,10 +1,10 @@
 import sys, os
-from optparse import OptionParser
+from argparse import ArgumentParser
 import numpy as np
+from data_prep.prepare_dataset import load_dataset_from_file
 from cnn_models.hotdog import DeepDog
 from cnn_models.cnn import CNN
-from data_prep.load_test_data import load_image_from_path, load_images_from_directory
-from data_prep.image_pipeline import ImageFeeder, ImageDisplayer
+
 from config_helper import retrieve_option_model
 
 # There should be only one person match per image
@@ -21,7 +21,9 @@ def get_boolean_from_output(output_data, threshold=0.5):
     return ret
 
 # pass loaded model as parameter
+# ImageFeeder is imported on the fly, to work with environments without face_recognition
 def test_model_individual(model, image_path):
+    from data_prep.image_pipeline import ImageFeeder
     image_feeder = ImageFeeder(image_path)
     input_data = image_feeder.input_data
     output_data = model.model.predict(input_data)
@@ -30,33 +32,48 @@ def test_model_individual(model, image_path):
     image_feeder.set_location_values(location_values)
     return location_values
 
+def evaluate_model(model, input_data, output_data):
+    print("Beginning evaluation")
+    score = model.model.evaluate(input_data, output_data)
+    print(score)
+
 # def test_model_directory(model, image_directory):
 #     input_ = load_images_from_directory(image_directory)
 
 def main():
-    parser = OptionParser()
-    parser.add_option("-p", "--path", dest="path")
-    parser.add_option("-d", "--directory", dest="directory")
-    parser.add_option("-m", "--model", dest="model")
-    options, args = parser.parse_args()
+    parser = ArgumentParser()
+    parser.add_argument("-p", "--path", dest="path")
+    parser.add_argument("-d", "--directory", dest="directory")
+    parser.add_argument("-m", "--model", dest="model")
+    parser.add_argument("-v", "--validate", action="store_true", dest="validate")
+    args = parser.parse_args()
     path = ""
     directory = ""
     model_type = ""
-    if options.path:
-        print("Path accepted")
-        path = options.path
-    elif options.directory:
-        print("Directory accepted")
-        directory = options.directory
-    else:
-        print("No path or directory given!")
-        return
+    validate = ""
 
-    model = retrieve_option_model(options.model)
+    model = retrieve_option_model(args.model)
     try:
         model.load_model()
     except Exception as e:
         print("Model should be pretrained!")
+
+    if args.validate:
+        _, __, validation_input, validation_output = \
+            load_dataset_from_file()
+        evaluate_model(model, validation_input, validation_output)
+        return
+
+    if args.path:
+        print("Path accepted")
+        path = args.path
+    elif args.directory:
+        print("Directory accepted")
+        directory = args.directory
+    else:
+        print("No path or directory given!")
+        return
+
     print(test_model_individual(model, path))
 
 if __name__ == '__main__':

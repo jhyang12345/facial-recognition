@@ -17,6 +17,7 @@ class Ensemble:
         self.model = None
 
         self.build_model()
+        self.compile_model()
 
     def build_model(self):
         model_input = Input(shape=self.input_shape)
@@ -40,6 +41,10 @@ class Ensemble:
     def load_model(self):
         print("Model already loaded!")
 
+    def compile_model(self):
+        # not sure what type of optimizer or loss function to use
+        self.model.compile(loss='binary_crossentropy', optimizer='adam',
+                                metrics=['accuracy'])
 
     def evaluate(self, input_data):
         output_data = model.predict(input_data, batch_size = 32)
