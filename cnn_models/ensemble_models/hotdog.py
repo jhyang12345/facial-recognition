@@ -22,7 +22,7 @@ class DeepDog:
             self.model.summary()
 
     def build_model(self):
-        model_input = Input(shape=self.input_shape)
+        model_input = self.input_layer#Input(shape=self.input_shape)
         alpha = self.alpha
         activation_type = 'elu'
 
@@ -66,6 +66,8 @@ class DeepDog:
         out = Dense(1, activation='sigmoid')(x)
 
         self.model = Model(model_input, out, name='deepdog')
+
+    def compile_model(self):
         # not sure what type of optimizer or loss function to use
         self.model.compile(loss='binary_crossentropy', optimizer='adam',
                                 metrics=['accuracy'])

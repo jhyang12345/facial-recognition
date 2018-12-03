@@ -21,7 +21,7 @@ class CNNPool:
         if summarize: self.model.summary()
 
     def build_model(self):
-        model_input = Input(shape=self.input_shape)
+        model_input = self.input_layer#Input(shape=self.input_shape)
         alpha = self.alpha
         activation_type = 'relu'
 
@@ -79,6 +79,8 @@ class CNNPool:
         out = Dense(1, activation='sigmoid')(x)
 
         self.model = Model(model_input, out, name='cnn_pool')
+
+    def compile_model(self):
         self.model.compile(loss='binary_crossentropy', optimizer='adam',
                                 metrics=['accuracy'])
 

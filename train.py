@@ -8,11 +8,12 @@ from cnn_models.cnn_dropout import CNNDropout
 from trainers.trainer import Trainer
 from config_helper import retrieve_option_model
 
+# No need to train ensemble model here
 def train_all():
     print("Training all!")
     deep_dog = DeepDog()
     Trainer(deep_dog)
-    
+
     cnn = CNN()
     Trainer(cnn)
 
