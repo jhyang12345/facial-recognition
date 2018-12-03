@@ -13,7 +13,7 @@ frames/*
 *.mkv
 *.webm
 *.h5
-*.json
+facenet_*.json
 *.hdf5
 
 
