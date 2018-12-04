@@ -23,7 +23,7 @@ class Ensemble:
         model_input = Input(shape=self.input_shape)
 
         model_objects = []
-        model_objects.append(DeepDog(model_input, summarize=False))
+        # model_objects.append(DeepDog(model_input, summarize=False))
         model_objects.append(CNN(model_input, summarize=False))
         model_objects.append(CNNPool(model_input, summarize=False))
         model_objects.append(CNNDropout(model_input, summarize=False))

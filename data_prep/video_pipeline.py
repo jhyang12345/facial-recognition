@@ -36,6 +36,7 @@ class MakeClassifiedVideo:
 
     def init_model(self, options_model=""):
         self.model = retrieve_option_model(options_model)
+        print(self.model.name)
         self.model.load_model()
 
     def iterate_through_video(self):

@@ -9,16 +9,16 @@ def retrieve_option_model(model_type):
     model_type = model_type.lower() if model_type else ""
     model = None
     if model_type == "hotdog":
-        model = DeepDog()
+        model = DeepDog(summarize=False)
     elif model_type == "cnn":
-        model = CNN()
+        model = CNN(summarize=False)
     elif model_type == "cnn_pool":
-        model = CNNPool()
+        model = CNNPool(summarize=False)
     elif model_type == "cnn_dropout":
-        model = CNNDropout()
+        model = CNNDropout(summarize=False)
     elif model_type == "ensemble":
-        model = Ensemble()
+        model = Ensemble(summarize=False)
     else:
-        model = DeepDog()
+        model = DeepDog(summarize=False)
 
     return model
