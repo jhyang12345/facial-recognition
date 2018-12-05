@@ -45,8 +45,8 @@ class MakeClassifiedVideo:
         i = 0
         for frame in original_video.iter_frames():
             i += 1
-            # if i % 3 == 0:
-            self.get_classified_frame(frame, i)
+            if i % 3 == 0:
+                self.get_classified_frame(frame, i)
         print(count)
 
     def get_classified_frame(self, frame, i):

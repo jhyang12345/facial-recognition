@@ -19,8 +19,7 @@ def main():
     if args.quiver:
         server.launch(
             model.model,
-            ["IU"],
-            input_folder="./examples/test",
+            input_folder="./examples/test_cut",
         )
 
 if __name__ == '__main__':
