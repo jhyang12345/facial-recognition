@@ -6,7 +6,6 @@ from data_prep.image_pipeline import ArrayFeeder
 from test import get_boolean_from_output
 from config_helper import retrieve_option_model
 from argparse import ArgumentParser
-from config_helper import retrieve_option_model
 
 def cut_video_clip(video_path, start, end):
     original_video = VideoFileClip(video_path)
@@ -46,8 +45,8 @@ class MakeClassifiedVideo:
         i = 0
         for frame in original_video.iter_frames():
             i += 1
-            if i % 3 == 0:
-                self.get_classified_frame(frame, i)
+            # if i % 3 == 0:
+            self.get_classified_frame(frame, i)
         print(count)
 
     def get_classified_frame(self, frame, i):

@@ -15,7 +15,7 @@ frames/*
 *.h5
 facenet_*.json
 *.hdf5
-
+tmp
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
