@@ -20,7 +20,7 @@ def get_index(frame_name):
     index = int(frame_name[start:end])
     return index
 
-def concatenate_frames_to_clip(frames_path, fps=10):
+def concatenate_frames_to_clip(frames_path, fps=40):
     frames = os.listdir(frames_path)
     frames = sorted(frames, key = lambda x: get_index(x))
     image_sequence = [os.path.join(frames_path, frame) for frame in frames]
@@ -45,8 +45,8 @@ class MakeClassifiedVideo:
         i = 0
         for frame in original_video.iter_frames():
             i += 1
-            if i % 3 == 0:
-                self.get_classified_frame(frame, i)
+            # if i % 3 == 0:
+            self.get_classified_frame(frame, i)
         print(count)
 
     def get_classified_frame(self, frame, i):
@@ -79,6 +79,7 @@ def main():
         start = int(args.start)
         end = int(args.end)
         cut_video_clip(path, start, end)
+    # make a classified video
     elif args.make:
         path = args.make
         MakeClassifiedVideo(path, args.model)

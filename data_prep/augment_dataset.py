@@ -16,12 +16,12 @@ seq = iaa.Sequential([
             translate_percent={"x": (-0.1, 0.1), "y": (-0.1, 0.1)},
             rotate=(-30, 30),
         ),
-        iaa.Add((-45, 45)),
+        iaa.Add((-45, 45), per_channel=0.5),
     ],
     random_order=True)
 
 # save augmented versions of the given image in a parallel directory called augmented
-def augment_image_save(full_path, times=9):
+def augment_image_save(full_path, times=14):
     file_path = os.path.dirname(full_path)
     file_name = os.path.basename(full_path)
     file_head = file_name.split(".")[0]
