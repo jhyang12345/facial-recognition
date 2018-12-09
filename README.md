@@ -51,4 +51,12 @@ python test.py [-m <Model-Name> (-p <Path-To-Image> or -d <Directory-Of-Images>)
 Based hugely on the [DeepDog](https://medium.com/@timanglade/how-hbos-silicon-valley-built-not-hotdog-with-mobile-tensorflow-keras-react-native-ef03260747f3) model that was trained to recognize hotdogs. The original intention was to make a model slim enough to port onto an Android phone. This model takes use of Separable Convolutions to minimize the effects of lacking parameters in slim models. **This model uses ELU activations**  
 ### cnn_models/cnn.py
 **Relatively Traditional CNN model**  
-This is the relatively traditional **This model uses ELU activations**  
+This is the relatively traditional cnn model. **This model uses ELU activations**    
+### cnn_models/cnn_pool.py  
+**CNN model with Max Pooling layers in between**  
+**This model uses RELU activations**  
+
+### cnn_models/ensemble.py  
+**Ensemble model of a selected number or all the above trained models**  
+A simple ensemble model of specified models, that are pretrained. **This model simply takes the average of the above model outputs.**
+This model produces the highest accuracy so far.
