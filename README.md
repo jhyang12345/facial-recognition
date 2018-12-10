@@ -1,4 +1,6 @@
 # facial-recognition
+This project is a CNN based deep learning model focused on recognizing one person from an image of a face. The focus of this project, is to treat the task of facial-recognition as a regular object classification task, under the presumption that only images of faces will be fed into the network.  
+We collected all the data to train our model ourselves (We decided not to use the CelebA dataset), wrote all the pipelines to properly align and cut out faces in our dataset.
 
 ## Data prep modules
 
