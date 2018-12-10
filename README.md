@@ -1,6 +1,7 @@
 # facial-recognition
 This project is a CNN based deep learning model focused on recognizing one person from an image of a face. The focus of this project, is to treat the task of facial-recognition as a regular object classification task, under the presumption that only images of faces will be fed into the network. **Although I am aware of models such as DeepFace, or FaceNet that is designed specifically to handle face recognition, the point of this project is to reach similary results using CNN based networks**  
 I collected all the data to train our model ourselves (I decided not to use the CelebA dataset), wrote all the pipelines to properly align and cut out faces in our dataset.  
+**(Demo YouTube video: [demo video](https://youtu.be/xvfkDnFHwiU))**
 
 ## Data preparation methodology
 Preparing data the right way was the key factor in achieving our final validation accuracy (97%~). The final procedure can be summarized by the following.  
@@ -14,8 +15,8 @@ The two steps that ended up taking most of the work and experimenting were step 
 
 #### Cropping and aligning faces from images & video frames
 The reason I felt the need for face alignment when cropping the images was because all the implementations of algorithms like FaceNet and DeepFace used examples of faces that were neatly rotated and cropped as input. Also aside from that, I was planning to augment the dataset we collected by using scale, rotations and translations, and there was necessity for cleanly cut images that can be augmented. Even after the augmentations, we needed to capture all the features that a person has, and that is why we needed a properly centered and scaled image.  
-  
-**Original Image (Source Google Images)**  
+
+**Original Image *(Source Google Images)***  
 <img src="https://github.com/jhyang12345/facial-recognition/blob/master/examples/test2.jpg" width="300" alt="Original Image"/>  
 
 **Aligned Image**  
