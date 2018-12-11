@@ -1,5 +1,5 @@
 # facial-recognition
-This project is a CNN based deep learning model focused on recognizing one person from an image of their face. The focus of this project, is to treat the task of facial-recognition as a regular object classification task, under the presumption that only images of faces will be fed into the network. **Although I am aware of models such as DeepFace, or FaceNet that are designed specifically to handle face recognition, the objective of this project is to reach similar results using CNN based networks**  
+This project is a CNN based deep learning model focused on recognizing one person from an image of their face. To be more specific the task is to train a model to recognize IU(아이유) who is a famous KPOP singer. The focus of this project, is to treat the task of facial-recognition as a regular object classification task, under the presumption that only images of faces will be fed into the network. **Although I am aware of models such as DeepFace, or FaceNet that are designed specifically to handle face recognition, the objective of this project is to reach similar results using realtively normal CNN based networks**  
 I collected all the data to train our model(decided not to use the CelebA dataset), wrote all the pipelines to properly align and cut out faces in our dataset.  
 **(Demo YouTube video: [demo video](https://youtu.be/xvfkDnFHwiU))**
 
@@ -23,10 +23,16 @@ The reason I felt the need for face alignment when cropping the images was becau
 <img src="https://github.com/jhyang12345/facial-recognition/blob/master/examples/output2.jpg"
 width="300" alt="Aligned Image"/>
 
-**Labeled Image with trained model**  
+**Labeled Image classified by final trained model** *Pink boxes indicate positive match*  
 (Model is trained to recognize unaligned images through the help of image augmentation)  
 <img src="https://github.com/jhyang12345/facial-recognition/blob/master/examples/labeled.jpg"
-width="300" alt="Aligned Image"/>
+width="300" alt="Aligned Image"/>  
+
+The final dataset that I decided to go with consisted of around 7000~ images. There were 3000~ positive labeled images, and 4000~ negative labeled images. At first, I thought of using the CelebA dataset as the main source of negative examples. However, after skimming through the images and reading a couple of blog posts I ended up with the conclusion that the dataset was a bit biased towards including Westerners (there was a very low ratio of Asian faces). Since the narrowed down objective was to recognize IU, it was crucial to train the model to differentiate Asians. Deep Learning models are only as good as the data you feed them, and I felt the need to collect my own dataset.  
+
+The majority of time spent on this project was writing code to pipeline directories of images, videos, to their cropped and aligned versions. This step required heavily on the algorithm to find facial landmarks and bounding boxes. For this task I used the [Face Recognition](https://github.com/ageitgey/face_recognition) Python library. After a few tests, I noticed that it performed a lot more accurately than the OpenCV Haar Cascades algorithm (after all they use different approches). I made sure to skip multiple frames when using videos as input, to make sure the images collected vary more.  
+
+Data augmentation was crucial to achieving the final validation accuracy(97%~). Before augmenting the dataset, validation accuracy struggled to get past 87%~89% while training accuracy shot up to 99%~. The final augmentation method ended up being focused at applying artificial lighting, scale change, rotations, and blur. These were chosen under the premise that real life photos are likely to show alterations like these.
 
 ## Data prep modules
 
