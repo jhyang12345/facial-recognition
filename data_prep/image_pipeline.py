@@ -80,6 +80,12 @@ class ImageFeeder:
         self.location_values = boolean_array
         display_image_with_drawn_boundaries(Image.open(self.full_path).convert("RGB"), self.locations, boolean_array)
 
+    def save_drawn_image(self, boolean_array):
+        self.location_values = boolean_array
+        img_array = np.asarray(Image.open(self.full_path).convert("RGB"), np.uint8)
+        drawn_array = get_drawn_array(img_array, self.locations, self.location_values)
+        Image.fromarray(drawn_array).save("labeled.jpg")
+
 class ArrayFeeder:
     def __init__(self, arr, target_size=(128, 128)):
         self.locations = []
