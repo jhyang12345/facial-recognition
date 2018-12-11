@@ -27,12 +27,13 @@ width="300" alt="Aligned Image"/>
 (Model is trained to recognize unaligned images through the help of image augmentation)  
 <img src="https://github.com/jhyang12345/facial-recognition/blob/master/examples/labeled.jpg"
 width="300" alt="Aligned Image"/>  
+More examples are in the [jupyter notebook](https://github.com/jhyang12345/facial-recognition/blob/master/presentation.ipynb) and [demo video](https://youtu.be/xvfkDnFHwiU)  
 
 The final dataset that I decided to go with consisted of around 7000~ images. There were 3000~ positive labeled images, and 4000~ negative labeled images. At first, I thought of using the CelebA dataset as the main source of negative examples. However, after skimming through the images and reading a couple of blog posts I ended up with the conclusion that the dataset was a bit biased towards including Westerners (there was a very low ratio of Asian faces). Since the narrowed down objective was to recognize IU, it was crucial to train the model to differentiate Asians. Deep Learning models are only as good as the data you feed them, and I felt the need to collect my own dataset.  
 
 The majority of time spent on this project was writing code to pipeline directories of images, videos, to their cropped and aligned versions. This step required heavily on the algorithm to find facial landmarks and bounding boxes. For this task I used the [Face Recognition](https://github.com/ageitgey/face_recognition) Python library. After a few tests, I noticed that it performed a lot more accurately than the OpenCV Haar Cascades algorithm (after all they use different approches). I made sure to skip multiple frames when using videos as input, to make sure the images collected vary more.  
 
-Data augmentation was crucial to achieving the final validation accuracy(97%~). Before augmenting the dataset, validation accuracy struggled to get past 87%~89% while training accuracy shot up to 99%~. The final augmentation method ended up being focused at applying artificial lighting, scale change, rotations, and blur. These were chosen under the premise that real life photos are likely to show alterations like these.
+Data augmentation was crucial to achieving the final validation accuracy(97%~). Before augmenting the dataset, validation accuracy struggled to get past 87%\~89% while training accuracy shot up to 99%\~. The final augmentation method ended up being focused at applying artificial lighting, scale change, rotations, and blur. These were chosen under the premise that real life photos are likely to show alterations like these.
 
 ## Data prep modules
 
