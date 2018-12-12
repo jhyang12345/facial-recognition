@@ -70,7 +70,7 @@ def main():
         print("Model should be pretrained!")
 
     if args.validate:
-        _, __, validation_input, validation_output = \
+        training_input, training_output, validation_input, validation_output = \
             load_dataset_from_file()
         evaluate_model(model, validation_input, validation_output)
         return
